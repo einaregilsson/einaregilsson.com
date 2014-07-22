@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Coco/R plugin for Visual Studio</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Coco/R plugin for Visual Studio</h2>
+				<small>
+					Posted: <time>2009-03-20</time> 
+					Last updated: <time datetime="2011-05-04">2011-05-04</time>
+				</small>
+			
+				<p>I've <a href="../cocor-for-boo/">blogged before</a> about the excellent <a href="http://www.ssw.uni-linz.ac.at/Research/Projects/Coco/">Coco/R parser generator</a>. I'm using it a lot in my masters project and I'm happy with it but there were a few things I wished worked differently. The main thing was that I wanted better Visual Studio integration. I had set up a pre-build event that generated the parser and scanner before every build. However there is obviously no need to re-generate the files unless the grammar file has changed. Generating on every build also had the effect that Visual Studio kept prompting me about reloading changed files and I had to build to see if there were any errors in my grammar. So, I decided to create a Visual Studio plugin for Coco/R myself.</p>
+				
+				<p>Coco/R is open source and written in C# (at least one version of it) so it was easy to get the source. I then looked at a couple of tutorials on Visual Studio plugins and managed to hack together an plugin that works well enough for my needs. I also made a small change to the way Coco/R generates its parsers and scanners from frame files. Here are the features that are unique to the plugin:</p>
+				
+				<ul>
+					<li>Works with Visual Studio 2005 and 2008</li>
+					<li>When you click "Add a new item" in a C# project, you'll find a "Coco/R Attributed Grammar" option under My Templates at the bottom of the screen. The .atg file you get has a simple example grammar that just reads numbers or identifiers. I wanted this because everytime I create a new .atg I start by finding an old one and copying the basics from it.</li>
+					<li>Every time an .atg file is saved, the parser and scanner are re-generated. If the generated files are open then the AddIn closes them before re-generating, to avoid the dreaded "Files were reloaded" prompt.</li>
+					<li>Errors and warnings from Coco show up in Visual Studio's error list window just like build errors as soon as you save the .atg file.</li>
+					<li>Instead of using frame files, the plugin uses partial classes for the parser and scanner. There are four files, Parser.cs, Parser.generated.cs, Scanner.cs and Scanner.generated.cs. This allows you to add stuff to your parser and scanner in an actual .cs file so you get the benefit of the Visual Studio editor, instead of having to write it in the .frame file or the .atg file.</li>
+				</ul>
+
+				<p>So, that's it. You can <a href="CocoSetup.msi">download an MSI installer for it</a> and you can <a href="CocoPlugin.zip">download the source</a>. Enjoy.</p>
+				
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="/js/jquery-1.7.min.js"></script>
+		<script src="/js/site.js"></script>
+	</body>
+</html>

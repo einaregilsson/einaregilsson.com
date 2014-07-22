@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Extensionless urls in ASP.NET MVC on IIS 6</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Extensionless urls in ASP.NET MVC on IIS 6</h2>
+				<small>
+					Posted: <time>2008-11-06</time> 
+					Last updated: <time datetime="2012-04-18">2012-04-18</time>
+				</small>
+			
+				<p>I recently started playing around with <a href="http://asp.net/mvc">ASP.NET MVC</a> to build a small website. I'm pretty impressed, I like working with MVC a lot better than the web forms model. One thing that ASP.NET MVC offers is to have "pretty urls" similar to frameworks like <a href="http://rubyonrails.org">Ruby on Rails</a> or <a href="http://djangoproject.com">Django</a>, that is, instead of urls that look like <strong>http://example.com/index.aspx?car=Ford&amp;year=1990</strong> you get urls like <strong>http://example.com/cars/Ford/1990</strong>. This works flawlessly in Visual Studio using the development webserver but there can be some complications when deploying to IIS. The new IIS 7 has support for this built in when using integrated mode, however my webhost is still on IIS 6 and there are problems there. Essentially there are two ways that can be used with IIS 6. The first way is to map all requests to the ASP.NET engine, even ones for images, css etc. That works but has some performance implications. The other way is to use a file extension in all urls, so our example url might have to be something like <strong>http://example.com/cars.aspx/Ford/1990/</strong>. That's not horrible but not the way I want it either. So, I came up with another way.</p>
+
+				<p>I wrote a blog post a while ago about how to get <a href="../pretty-wordpress-permalinks-on-iis/">pretty wordpress permalinks on IIS</a> using IIS's 404 page, so I figured I might be able to hack something similar together for this. Just a bit about how the IIS 404 page works: when IIS doesn't find an item for a request it will execute the 404 page with the missing page's url as a querystring. So, if we make a request for <strong>http://example.com/doesntexist</strong> and the 404 page is <strong>/notfound.aspx</strong> then the server executes <strong>http://example.com/notfound.aspx?404;http://example.com/doesntexist</strong>. The important thing here is that IIS executes this in response to the original request, it does not redirect to this page. That means that even as we're executing the 404 page the user still sees <strong>http://example.com/doesntexist</strong> in his browser url bar. (Note that when you set the 404 page in IIS it allows you to specify either <em>file</em> or <em>url</em>, you must choose <em>url</em>. Shared hosting webhosts typically offer just <em>url</em>, at least mine only does. Also, the 404 page you can specify in web.config is a completely different thing, that is redirected to and so is useless for this.)</p>
+
+				<p>When you create a new MVC project in Visual Studio you get a file called Default.aspx in your root directory. (Note: this whole article is about how things are in the MVC beta, they might change in other versions). In the codebehind file, Default.aspx.cs there is a page load method that does some rewriting and then executes an Mvc http handler. I set this file to be my 404 page in IIS (you might use a different file if you want it somewhere else) and then changed its Page_Load method to be like this:</p>
+
+				<code data-language="csharp">
+public void Page_Load(object sender, System.EventArgs e) {
+	string querystring = Request.ServerVariables["QUERY_STRING"];
+	if (querystring.StartsWith("404;")) {
+		int startPos = querystring.IndexOf('/', "404;https://1".Length);
+		HttpContext.Current.RewritePath(querystring.Substring(startPos));
+	} else {
+		HttpContext.Current.RewritePath(Request.ApplicationPath);
+	}
+	IHttpHandler httpHandler = new MvcHttpHandler();
+	httpHandler.ProcessRequest(HttpContext.Current);
+}
+				</code>
+
+				<p>If we step through this a bit, first it checks if the querystring starts with 404; in that case the page is being executed as a 404 page, otherwise we do what this file previously did. Then we parse out the path from our querystring, rewrite it into our current http context and then execute the MvcHttpHandler on it. So, all requests with paths like <strong>/cars/Ford/1990</strong> will end up here where we parse the relevant bit out of them and execute them with MVC.</p>
+
+				<p>Now we have this working, but at the expense of ruining the real 404 system. Any 404 request will be routed through there, no matter what it's for, so how can we handle real 404's? What I did was to add a new Action to my HomeController called PageNotFound which simply looks like this:</p>
+
+				<code data-language="csharp">
+public ActionResult PageNotFound(string path) {
+	ViewData["path"] = "/" + path;
+	Response.StatusCode = 404;
+	return View();
+}
+				</code>
+
+				<p>and then I added a catch-all rout map at the very bottom of my route map, like so:</p>
+
+				<code data-language="csharp">
+routes.MapRoute(
+	"PageNotFound",                                      // Route name
+	"{*path}",                                           // URL with parameters
+	new { controller = "Home", action = "PageNotFound"}  // Parameter defaults
+);
+				</code>
+
+				<p>The <strong>{*path}</strong> means that this will match any possible path, having it at the bottom means that it will only ever execute if no other route matches => this is executed for pages that don't exist. Then it passes the non-existent path to the controller, which sets the status code to 404 and adds the path to the ViewData, so the view can print a nice error message. One thing I had to change also was to remove the <em>Default</em> route from the route map, the one that had the url defined as <strong>{controller}/{action}/{id}</strong>. I removed it because it matched any url with three components and in the case when the components didn't match any controller or action I got some ugly error message about missing controllers when what I really wanted was a 404 page. Instead I just explicitly state my routes now and usually don't have the <strong>{controller}</strong> or <strong>{action}</strong> in the urls. With a bigger site this might be annoying and there are probably cleaner ways to handle it so any suggestions are welcome in the comments.</p>
+
+				<p>So that's it. It's all a big hack, but it does work without reducing performance by mapping everything to asp.net. I'm also not sure if the raw logs will show all those requests as 404's or 200's since my webhost doesn't let me see raw logs for my subdomains, but I think they'll be marked as 200. This has also only been tested when the site is in the root folder, I don't know if it will work unchanged if the application is in a subfolder on the server.</p>
+				
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

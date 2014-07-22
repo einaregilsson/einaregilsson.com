@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Idiot cardgame (a.k.a. Shithead)</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Idiot cardgame (a.k.a. Shithead)</h2>
+				<small>
+					Posted: <time>2008-09-13</time> 
+					Last updated: <time datetime="2012-04-18">2012-04-18</time>
+				</small>
+			
+				<p class="update"><strong>UPDATE 20.10.2010:</strong> A few days ago I launched a completely revamped version of this game, with better cards, animated moves and just a lot better in every way. That means that this blog post is completely out of date! Play the new version at <a href="http://www.idiot-cardgame.com">http://www.idiot-cardgame.com</a> or at <a href="http://www.shithead-cardgame.com/">http://www.shithead-cardgame.com</a>. Or, you can play the original version, the one that this blog post is talking about at <a href="http://einaregilsson.com/idiot/">http://einaregilsson.com/idiot/</a>.</p>
+
+				<p>Original blog post follows:</p>
+
+				<p>The last few weeks my hobby project has been creating a cardgame in Javascript. I've always wanted to create a cardgame and I decided to use simple Javascript so I could make it available online since no-one wants to bother to download small games. I figured there were thousands of blackjacks and solitaires out there so I decided to create my favorite cardgame, Idiot. After googling around I found that there was a <a href="http://en.wikipedia.org/wiki/Shithead_(card_game)">Wikipedia page</a> about it under the name Shithead which listed all sorts of different variations. My variation uses the rules that I've usually used in real life:</p>
+
+				<ul>
+					<li>The point is to lose all your cards by putting them on the pile, a card that is put on the pile must be equal or higher than the top card of the pile. If you have no card to put on the pile you must take the entire pile.</li>
+					<li>There are always three cards in your hand, if you have less than three you must draw enough cards from the deck to get three again. After the deck is finished no more cards are drawn.</li>
+					<li>There are three downwards facing cards and three upwards facing cards on the table. You cannot play them until your hand is finished. You cannot look at a downward facing card before playing it.</li>
+					<li>Before you start you can exchange cards from your hand with the upwards facing cards on the table.</li>
+					<li>You can put a two on top of everything, it is the restart card.</li>
+					<li>You can put a five on top of everything, it is the reverse card, meaning that in the next turn the opponent must put a card equal or lower than five.</li>
+					<li>You can put a ten on top of everything and it burns the pile, and you get to put out the first card in the new pile.</li>
+					<li>You can put out more than one card at a time as long as they have the same rank.</li>
+					<li>If there are four cards with the same rank at the top of the pile then the pile is removed.</li>
+					<li>If you have no card that you can put on top of the pile then you may draw the top card of the deck and put on the pile, if it is a legal move then you do not have to take the pile.</li>
+				</ul>
+
+				<p>The game can be played at the url <a href="http://einaregilsson.com/idiot/">http://einaregilsson.com/idiot/</a>. As for the implementation, don't expect any animation or fancy stuff. You simply choose the cards you want to put out and press the <em>Play selected cards</em> button. When the computer is playing the cards simply disappear from its hand and show up on the pile. However there is a small delay between each move by the computer so you can see when it puts out two or more cards and when it's drawing cards. As for the rule about drawing a card off the top of the deck when you have to take the pile, that is done automatically. You simply press the <em>Take the pile</em> button and you will see a new card appear at the top of the pile (given that the deck is not empty). If the move is legal then the pile will stay, if it is not legal you will get the whole pile in your hand.</p>
+
+				<p>The game is implemented in two files, <a href="cards.js">cards.js</a> and <a href="idiot.js">idiot.js</a>. Cards.js is a generic library that has a base class for a card container and concrete classes for a hand, deck and card, it could easily be re-used for any card game. Idiot.js is the game itself, it works allright, although there are a lot of edge cases that could be added to the computer player to make it smarter. The code is pretty heavily commented so it should be easy to follow should anyone want to extend the game or use the library for something. The game files are licensed under a <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution license</a> and so can be used for pretty much anything, they have been tested on the latest versions of all the major browsers. Please leave any error reports or suggestions as comments on this page.</p>
+
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

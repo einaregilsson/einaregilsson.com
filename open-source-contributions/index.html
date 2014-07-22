@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Open Source Contributions</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Open Source Contributions</h2>
+				<small>
+					Posted: <time>2007-07-23</time>
+					Last updated: <time datetime="2012-04-19">2012-04-19</time>
+				</small>
+
+				<p>I've contributed small fixes or features to some open source projects. Mostly it's when I've needed something myself and then figured I might as well send the changes to the project owners.</p>
+
+				<p><strong><a title="A document database" href="http://www.mongodb.org/">MongoDB:</a></strong> We are using MongoDB in my job at <a href="http://www.trustpilot.com">Trustpilot</a>, and I've submitted a couple of pull requests for the C# driver for things that I needed, mainly around profiling. I submitted <a href="https://github.com/mongodb/mongo-csharp-driver/pull/143">Pull Request 143</a> to add a missing field to the SystemProfileInfo object and <a href="https://github.com/mongodb/mongo-csharp-driver/pull/144">Pull Request 144</a> to fix a number of issues around the serialization of lock statistics in the system.profile collection. Both of those were accepted and released in v1.8 of the driver. I've also submitted <a href="https://github.com/mongodb/mongo-csharp-driver/pull/139">Pull Request 139</a> which adds a couple of features to the LINQ provider to explain queries and specify which index to use. That one hasn't been accepted yet but hopefully will soon.</p>
+
+				<p><strong><a title="The blogging system used to run this web" href="http://wordpress.org">Wordpress:</a></strong> I submitted <a href="http://trac.wordpress.org/ticket/4739">bug 4739</a> and a patch for it. It finally made it into trunk in <a href="http://core.trac.wordpress.org/changeset/15930">changeset 15930</a> and was released in Wordpress 3.1. It fixes the transformation from Icelandic letters to ASCII when creating page slugs. I previously wrote about it in <a href="../icelandic-letters-in-wordpress-permalinks/">this blog post</a>.</p>
+				
+				<p><strong><a title="A great web framework in Python" href="http://djangoproject.com">Django:</a></strong> Django has a module called "localflavor" where people can submit self-validating controls for a particular country, for instance a combobox with all zip codes for the country, or a textbox that can validate a correct phone number. I wrote the <a href="http://code.djangoproject.com/browser/django/trunk/django/contrib/localflavor/is_">icelandic localflavor</a> (see ticket <a href="http://code.djangoproject.com/ticket/4143">here</a>) which includes a textbox that validates icelandic identification numbers, a textbox for phone numbers and a combobox with zip codes.</p>
+
+				<p><strong><a title="A Firefox extension for web navigation" href="http://standard-sitemap.org">Standard Sitemap:</a></strong> I contributed some code to this extension which allows websites to define their site structure in an xml document and a site tree is then displayed in a sidebar. There are a few extension developers working together on this and it should be excellent when it's finished.</p>
+
+				<p><strong><a title="MarkdownSharp" href="http://code.google.com/p/markdownsharp/">MarkdownSharp: </a></strong> I contributed a patch for making the options for the Markdown class be per-instance, not static, which makes it possible to use different instances with different options as well as make unit testing easier. The patch also added support for loading these options from a config file. There is a long <a href="http://code.google.com/p/markdownsharp/issues/detail?id=14">issue thread</a> about it and <a href="http://code.google.com/p/markdownsharp/source/detail?r=95">revision 95</a> is where it got checked into trunk.</p>			
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

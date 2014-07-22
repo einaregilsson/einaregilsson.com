@@ -1,0 +1,14 @@
+RewriteEngine On
+
+RewriteBase /
+
+RewriteRule ^(binaryclock|birketinget|brudkaup|idiot|idnskoli|karenbumba|oldweb|plr|qualitytabs)$ $1/ [R,L]
+
+RewriteRule ^cybercity/?$ cybercity/hverfi/hverfi.html [R,L]
+
+RewriteRule ^20\d\d/\d\d/\d\d/(.*)$ $1 [R=301,L]
+RewriteRule ^projects/(.*)$ $1 [R=301,L]
+
+RemoveHandler .py
+
+AddType application/x-xpinstall xpi

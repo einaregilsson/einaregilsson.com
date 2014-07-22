@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Integrating ZenPhoto into Wordpress</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Integrating ZenPhoto into WordPress</h2>
+				<small>
+					Posted: <time>2007-08-06</time> 
+					Last updated: <time datetime="2012-04-18">2012-04-18</time>
+				</small>
+			
+				<p class="update"><strong>UPDATE 2012-04-25:</strong> This post is over 4 years old at this point, I have no idea if this will work with the latest versions of Wordpress or ZenPhoto. I use neither anymore, so I can't help with failed installations.</p>
+				
+				<p><a href="http://zenphoto.org">ZenPhoto</a> is a great image gallery written in php that I use on another page I have. It has a great admin interface and themes that are simple to use. I wanted to integrate it into a WordPress blog so I looked around on the net and found a great article about it by a guy named <a href="http://ruzee.com">Steffen Rusitschka</a>. It explains how you can get your ZenPhoto gallery to look like your blog by including some WordPress pages in your ZenPhoto theme. The article is at <a href="http://www.ruzee.com/blog/2006/06/integrating-zenphoto-into-wordpress/">http://www.ruzee.com/blog/2006/06/integrating-zenphoto-into-wordpress/</a>.</p>
+
+				<p>His method works great but there were a few things that bugged me about it. First, my ZenPhoto javascript didn't work with it, so the inline editing of album descriptions didn't work. Also I wanted to be able to edit my ZenPhoto theme files in the WordPress theme editor. I tweak my theme all the time and I thought it would be much more convenient to be able to do it all in one place. So I figured out a way to make it work. Steffen gets full credit for coming up with the method, my contribution is simply making the javascript and theme editor work correctly, creating a link to the ZenPhoto admin interface from the WordPress admin interface and packing it all up in a zip file with easy installation instructions. I won't explain all the code here, it's done quite nicely in Steffens article but for those interested in the implementation it's basically this:</p>
+
+				<ol>
+					<li>Make the files in the ZenPhoto theme basically do nothing but include zp-index, zp-image and zp-album from the current WordPress theme folder. This allows us to edit the theme using the WordPress theme editor.</li>
+					<li>Add hooks in WordPress so the ZenPhoto stylesheet will be included in the &lt;head&gt; element of the page.</li>
+					<li>Add hooks in WordPress so the zenJavascript function from ZenPhoto is called on the pages, so the inline editing will work (see head.php for this).</li>
+					<li>Create a small WordPress plugin that creates a link to ZenPhoto from the WordPress admin interface, and gives the zp files pretty names in the WordPress theme editor ("ZenPhoto Index" for zp-index.php, "ZenPhoto Image" for zp-image.php etc.).</li>
+				</ol>
+
+				<p>For those that just want to get it working, here are the installation instructions:</p>
+
+				<ol>
+					<li>Download the zip file and unzip.</li>
+					<li>Copy the wordpress-integration-zp-theme folder into your zenphoto/themes folder.</li>
+					<li>Go to your ZenPhoto admin web, choose Options and activate the theme called "WordPress Integration Theme".</li>
+					<li>Copy the files (zp-index.php, zp-image.php, zp-album.php, zp-style.css) from the wordpress-theme-files folder into your current WordPress theme folder, /wp-content/themes/yourthemename.</li>
+					<li>Copy the zen-integration.php file into your WordPress plugin folder, /wp-content/plugins .</li>
+					<li>
+						Goto your WordPress admin interface, choose Plugins, and activate the "Zen Integration" plugin. Note that the plugin assumes that your zenphoto folder is directly below your WordPress folder and is called "zenphoto", "photos" or "gallery". If it's not, and you want to get the ZenPhoto link from the WordPress admin interface working you'll need to edit the zen-integration.php file, find this line:
+
+						<code data-language="php">$zp_admin_url = ''</code>
+
+						And change it to the full url of your ZenPhoto admin page, e.g.
+
+						<code data-language="php">$zp_admin_url = 'http://example.com/foo/bar/zenphoto/zen/admin.php'</code>
+					</li>
+					<li>There is no step 7, you're done!</li>
+				</ol>
+
+				<p>Now you should be able to go to your WordPress theme editor and see the files "ZenPhoto Index", "ZenPhoto Album", "ZenPhoto Image" and "ZenPhoto Stylesheet" and you can edit them right there. The files included in the zipfile are meant to be used with the default WordPress theme, Kubrick, and will probably not look very good on any other theme. It's the simplest thing I could come up with, I mostly just changed the default ZenPhoto theme a bit. You should change it to fit your current WordPress theme. In the files, the ZenPhoto part is always wrapped in a &lt;div id="zenphoto"&gt;, and the ZenPhoto stylesheet prefixes everything with #zenphoto, this is so your ZenPhoto stylesheet won't start affecting other parts of your blog.</p>
+
+				<p>So, that's it I think :). You can <a href="zen-integration.zip">download the zip file with all the needed file here</a>, let me know if you have any problems with it.</p>
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

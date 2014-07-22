@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Instant Rimshot</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Instant Rimshot</h2>
+				<small>
+					Posted: <time>2009-06-20</time> 
+					Last updated: <time datetime="2012-04-18">2012-04-18</time>
+				</small>
+			
+				<p>It's been a while since I've written anything here, I've been working on my master project like crazy, have a 6 month old baby and so haven't had much time for programming pet projects. Tonight I spent a half hour making perhaps the most useless application I'll ever make. It's based on the single-serving website <a href="http://instantrimshot.com">http://instantrimshot.com</a> which only has one huge red button, if you press it a rimshot sound is played. I thought it might be fun to have that available as a keyboard shortcut in windows, and then I started wondering how it could be done in C#.</p>
+				
+				<p>The only way to get a global keyboard working in .NET is by calling into the Win32 API. To register a global hotkey there is the aptly named function <a href="http://www.pinvoke.net/default.aspx/user32/RegisterHotKey.html">RegisterHotKey</a>. That requires you to have a window handle however, and I wanted to make the application as simple as possible, so I used a lower level API call, <a href="http://www.pinvoke.net/default.aspx/user32/SetWindowsHookEx.html">SetWindowsHookEx</a> which lets you get notified of all keyboard activity on the system. I then check what keys are pressed and when the combination Ctrl+Shift+I is pressed the sound is played. There is only one way to exit the app, and that is by pressing the keyboard combination Ctrl+Shift+Alt+I, that cleans up the hook before exiting. So, the code is shown below, you can <a href="InstantRimshot.zip">download the source</a> or just <a href="InstantRimshot.exe">download the program itself</a>. Enjoy!</p>
+
+				<code data-language="csharp">
+using System;
+using System.IO;
+using System.Media;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+
+class InstantRimshot {
+
+	const int WH_KEYBOARD_LL = 13;
+	const int WM_KEYDOWN = 0x100;
+
+	delegate int Hook(int code, IntPtr wParam, IntPtr lParam);
+
+	[DllImport("user32.dll")]
+	static extern IntPtr SetWindowsHookEx(int code,
+										  Hook func,
+										  IntPtr hInstance,
+										  int threadID);
+
+	[DllImport("user32.dll")]
+	static extern int UnhookWindowsHookEx(IntPtr hookHandle);
+
+	[DllImport("user32.dll")]
+	static extern int CallNextHookEx(IntPtr hhook,
+									 int code,
+									 IntPtr wParam,
+									 IntPtr lParam);
+
+	static bool IsPressed(Keys check) {
+		return ((Control.ModifierKeys &amp; check) == check);
+	}
+
+	static void Main() {
+
+		Stream sound = Assembly.GetExecutingAssembly()
+			.GetManifestResourceStream("InstantRimshot.rimshot.wav");
+		SoundPlayer player = new SoundPlayer(sound);
+		player.Load();
+		IntPtr hookHandle = IntPtr.Zero;
+		hookHandle = SetWindowsHookEx(WH_KEYBOARD_LL,
+			delegate(int code, IntPtr wParam, IntPtr lParam) {
+				if (code >= 0 &amp;&amp; wParam == (IntPtr) WM_KEYDOWN) {
+					Keys vkCode = (Keys)Marshal.ReadInt32(lParam);
+					if (Keys.I == vkCode
+					&amp;&amp; IsPressed(Keys.Control)
+					&amp;&amp; IsPressed(Keys.Shift)) {
+						if (IsPressed(Keys.Alt)) {
+							UnhookWindowsHookEx(hookHandle);
+							Application.Exit();
+							return CallNextHookEx(hookHandle, code,
+												  wParam, lParam);
+						} else {
+							player.Play();
+						}
+					}
+				}
+				return CallNextHookEx(hookHandle, code, wParam, lParam);
+			}, IntPtr.Zero, 0);
+		Application.Run();
+	}
+
+}
+				</code>
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

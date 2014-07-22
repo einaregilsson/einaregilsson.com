@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>JScript REPL</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>JScript REPL</h2>
+				<small>
+					Posted: <time>2009-02-20</time> 
+					Last updated: <time datetime="2012-04-18">2012-04-18</time>
+				</small>
+			
+				<p>Lately I have been doing some COM automation stuff on Windows. I've been using JScript (Microsoft's JavaScript implementation) since that's available on all Windows machines, and the other option, VBScript, is horrible. Normally I would use Python and the win32com package, but I needed to make some scripts that could work on any box without installing Python first. JScript is a pretty nice language, but it doesn't come with a <a href="http://en.wikipedia.org/wiki/Read-eval-print_loop">REPL</a> built in, which is very handy when you're doing experimental stuff (REPL = Read-Execute-Print-Loop). Now, writing your own REPL in a dynamic language with an <strong>eval</strong> statement is pretty easy, so I did just that. It took about 30 lines, of which about 10 are just about printing evaluated expressions nicely.</p>
+
+				<p>Here's how it works. If you enter a single line that ends with ; it is evaluated immediately. If it doesn't start with if,while,var,try,do,with,function,switch,for or print it is assumed to be an expression and its value is printed to the screen. If a new line doesn't end with ; is is assumed to be the beginning of a larger code block. In that case the script will keep reading in code without evaluating until either you end a line with ;; or you enter a line which consists of only one ;. The script also includes a convenience function called print() to print expressions. The script just uses a single variable, _$, so it won't conflict with variables you define when using it. Writing a single line with just the word &#8216;exit' will stop the script. Below you can see an example of the usage of the REPL. This sample is actually a online version that I did for fun, you can write in any command in it and try it out, it works exactly the same as the real script, although the online version took quite a bit more code. It even has command history, activated with the up and down arrow keys. (There are some issues in Internet Explorer, tab key doesn't work and strings with html entities my display incorrectly, because of <a href="http://stud3.tuwien.ac.at/~e0226430/innerHtmlQuirk.html">weird behaviour with &lt;pre&gt; tags and the .innerHTML property).</a></p>
+				
+				<p><iframe src="repl.html" style="width:620px; height:400px;overflow-x:hidden; border-style:none; border:solid 0px black;"></iframe></p>
+
+				<p>Here's the code:</p>
+				
+				<code data-language="js">
+function print(s) { WScript.Echo(s);}
+var _$ = '';
+
+while (_$ != 'exit') {
+	WScript.StdOut.Write(_$ ? '... ' : '>>> ');
+	_$ += (_$ ? '\n':'') + WScript.StdIn.ReadLine().replace(/^\s*|\s*$/g, '');
+
+	if (_$.match(/^[^\n]*;$|;;$|\n;$/)) {
+		try {
+
+			if (_$.match(/\n/) || _$.match(/^(if|while|var|try|do|with|function|switch|for|print)\b/)) {
+				eval(_$);
+			} else {
+				_$ = eval(_$);
+				if (typeof(_$) == 'undefined') {
+					print('undefined');
+				} else if (typeof(_$) == 'boolean') {
+					print(_$ ? 'true' : 'false');
+				} else if (typeof(_$) == 'string') {
+					print("'" + _$ + "'");
+				} else {
+					print(_$);
+				}
+			}
+		} catch(_$) {
+			print('ERROR: ' + _$.message);
+		}
+		_$ = '';
+	}             
+}
+				</code>
+				<p>Enjoy!</p>
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

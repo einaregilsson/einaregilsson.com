@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Binary Tree Image</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Binary Tree Image</h2>
+				<small>
+					Posted: <time>2007-09-20</time> 
+					Last updated: <time datetime="2012-04-18">2012-04-18</time>
+				</small>
+			
+				<p>Recently I had a school project where we needed to parse a certain grammar into a syntax tree and do some analysis on the code. Everytime I've had to work with trees (which has only been for school projects actually) I've been frustrated because it can be hard to visualize the tree, especially when it starts getting large. I've pretty much done two things in that situation, either draw the tree on a piece of paper, which takes a lot of time and is very boring, or try to look through the structure in the debugger, which gives you some idea but is not really very convenient. So, when I was working on this new project I figured I could probably come up with some simple way of displaying the tree while I was working on it. I wanted the solution to be re-usable so I could pull it out again the next time I have to work with binary trees without having to change it to match the new project. So, here's what I came up with.</p>
+
+				<p>I created an interface called INode, which looks like this:</p>
+
+				<code data-language="csharp">
+public interface INode
+{
+    INode Left { get;}
+    INode Right { get; }
+    string Text { get;}
+    object Value { get; }
+}
+				</code>
+
+				<p>In every binary tree structure I've ever made the nodes have pretty much looked like this, so this interface should be general enough that I could use it again. Then I created a class called BinaryTreeImage, which takes the root node of the tree as an argument in the constructor. It has four public methods (+ some overloads) that you can use to view the tree:</p>
+
+				<code data-language="csharp">
+//The bitmap object for the image
+public virtual Bitmap Bitmap
+
+//Saves the image to file as a .jpg
+public virtual void Save(string filename)
+//Saves the image to file in the specified image format
+public virtual void Save(string filename, ImageFormat format)
+
+//Writes the file to an outputstream in jpg format, for instance a response
+//stream in an asp.net application
+public virtual void WriteToStream(Stream outputStream)
+//Writes the file to an outputstream in the specified image format
+public virtual void WriteToStream(Stream outputStream, ImageFormat format)
+
+//Saves the file as a temporary jpg file, then launches it so it will open in
+//your default jpg editor
+public virtual void Show()
+				</code>
+
+				<p>In my current project I just added a -img switch to the program, and if it was set I used the Show() method to launch the image as soon as the tree was parsed. That made it a lot easier to work with and get a better grasp of the trees I was using.</p>
+
+				<p>When you draw the binary tree you have to figure out how much space it's gonna need to draw all the nodes. The naive way of calculating this is to first find the depth of the tree, then figure out how many nodes can possibly be in the bottom row, with 2<sup>maxdepth-1</sup>, and make the image wide enough to fit all those nodes in. Then you can just draw the nodes at the exact places that they should be if the tree was full and then everything is great, right? Wrong! I tried that approach first and while it works, it has some problems. As soon as you have a tree that's more than 5 or 6 levels deep you start getting a reeaally wide tree! If the tree is full than that can't be helped, that's just how wide the tree has to be. But if you have a pretty sparse tree (like I did) then you start getting some really crappy drawings. For instance, the root node of my syntax tree always had only one childnode. So when I had a few levels I had an image that was something like 3000 pixels wide, but was only using the right 1500 pixels of all that space.</p>
+
+				<p>So I thought about how I could fit my tree in as little space as possible and I finally found a solution that works pretty well. Recursion to the rescue! What I do now is use a depth first traversal and on the way back up I calculate the width of every subtree.</p>
+
+				<code data-language="csharp">
+protected virtual ImageNode CreateImageNodeTree(INode node)
+{
+    if (node == null)
+        return null;
+
+    ImageNode left = CreateImageNodeTree(node.Left);
+    ImageNode right = CreateImageNodeTree(node.Right);
+    ImageNode newNode = new ImageNode();
+    newNode.Node = node;
+    newNode.Left = left;
+    newNode.Right = right;
+
+    newNode.RightTreeWidth = (right == null) ? 0 : right.TotalWidth;
+    newNode.LeftTreeWidth = (left == null) ? 0 : left.TotalWidth;
+    newNode.TotalWidth = newNode.RightTreeWidth + newNode.LeftTreeWidth + NodeWidth + DX;
+
+    return newNode;
+}
+				</code>
+
+				<p>So after that I have the right, left  and total width of every subtree. Then I can just start on the root node, draw that in the middle, then call my left child with my co-ordinates and that node will draw itself at parent.X - me.RightTreeWidth and the right node will draw itself at parent.X + me.LeftTreeWidth. And so it goes on recursively until all the nodes are drawn.</p>
+
+				<p>I'm maybe not so good at explaining it, but below you can see how it works. Just add a few nodes to the binary tree and you'll see what happens. You can <a href="BinaryTreeImage.cs">view the BinaryTreeImage class here</a> or <a href="BinaryTreeImage.zip">download the example project</a> which includes the class, and the webpage to view it with. The code is released under the you-must-let-me-know license. Basically, do what you want with it, but let me know if you use it, just so I'll know if anyone else finds it useful :)</p>
+
+				<script type="text/javascript" src="BinaryTreeImage.js"></script>
+
+				<div style="text-align:center;">
+					<h3>Binary Tree Image Generator</h3>
+					<p>Enter a number between 1 and 100</p>
+					<input type="text" id="number" style="width:40px;" onkeypress="keyPress(event);"/> 
+					<button onclick="addNode();" id="addNr">Add Number</button><br />
+					<img id="tree" src="http://binarytreeimage.apphb.com/BinaryTreeImageGenerator.ashx?50" alt="Image of binary tree" style="margin:auto; border:dotted 1px grey; background:none; padding:0px; margin:10px auto;">
+				</div>
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

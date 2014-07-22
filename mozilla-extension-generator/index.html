@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Mozilla Extension Generator</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Mozilla Extension Generator</h2>
+				<small>
+					Posted: <time>2007-08-01</time> 
+					Last updated: <time datetime="2012-04-18">2012-04-18</time>
+				</small>
+				<p class="update"><strong> UPDATE 30.04.2012:</strong> This generator is horribly out of date and the output won't work with newer versions of Firefox/Thunderbird. Use something like the <a href="https://addons.mozilla.org/en-US/developers/tools/builder">Mozilla Addon Builder</a> instead.</p>
+				
+				<p>Since I started creating Mozilla extensions I spent a lot of time writing boilerplate code, and copying from one extension from the next. Then I found <a href="http://ted.mielczarek.org/code/mozilla/extensionwiz/">Ted Mielczarek's Extension Generator</a> which is a great page that takes some parameters and creates an extension ready for you to use. I used that for some time but in the end I still kept modifying each extension to fit my own style and include my library functions. So I decided to make my own Mozilla Extension Generator in Python, that would spit out extensions exactly the way I want them. I mostly liked the output of Ted's generator so I took an extension from it, modified to fit my style and then created the generator to create it. So if you see similarities between extension my by generator and Ted's, that's the reason, mine is partially based on his output. I've decided to put the generator on my page for others to download, and they can then tweak it to fit their ideas of what should be in all extensions. </p>
+
+				<p>When the script is run the output will look something like this:</p>
+
+				<p class="console">
+Mozilla Extension Generator
+Copyright (c) 2007 Einar Egilsson (http://einaregilsson.com)
+
+Extension name: My New Extension
+Extension code name: MyNewExtension
+Extension description: Does this and that
+Firefox or Thunderbird (f/t) : f
+Include Menu item ? (y/n): y
+Include Context menu ? (y/n): y
+Author name: Einar Egilsson
+Guid: mynewextension@einaregilsson.com
+Menu item label: My New MenuItem
+Menu item access key: m
+Contextmenu item label: My New ContextItem
+Contextmenu item access key: c
+
+Creating files...
+
+mynewextension/install.rdf
+mynewextension/chrome.manifest
+mynewextension/defaults/preferences/mynewextension.js
+mynewextension/chrome/content/mynewextension.js
+mynewextension/chrome/content/overlay.xul
+mynewextension/chrome/skin/overlay.css
+mynewextension/chrome/content/mynewextension.png
+mynewextension/chrome/content/mynewextensionlib.js
+mynewextension/chrome/locale/en-US/mynewextension.dtd
+mynewextension/chrome/locale/en-US/mynewextension.properties
+
+Extension complete
+				</p>
+
+				<p>This will generate all the necessary files for the extension, you can simply go into the folder created, zip it up, name as .xpi and install the extension. The questions are pretty straight forward, just about the only thing you need to know is that Extension code name must be a single word, because it will become a javascript object that all your other code will be wrapped in, to avoid polluting the global namespace.</p>
+
+				<p>Now, some features of the generated extension:</p>
+
+				<ul>
+					<li>Localization ready, strings are in .dtd and .properties files</li>
+					<li>Includes a library file with common function like accessing your prefs, writing to a file and more.</li>
+					<li>Includes debug functions that output to the javascript console and can be turned off in about:config</li>
+					<li>Can include menu item and context menu commands</li>
+					<li>...and more, just look at the generated files</li>
+				</ul>
+
+				<p>The generator is a single python file that includes all the other files. It should be easy to modify for anyone with a working knowledge of python. There are a few constants at the top that you can tweak, they are:</p>
+
+				<code data-language="python">
+#Constants
+#Fill these out so you won't get prompted for them everytime:
+YOUR_NAME       = ''
+YOUR_DOMAIN     = '' # if filled out the extension guid will be of 
+					 #the form extensionname@yourdomain.com
+FIREFOX_MIN     = '2.0'
+FIREFOX_MAX     = '2.0.0.*'
+THUNDERBIRD_MIN = '2.0'
+THUNDERBIRD_MAX = '2.0.0.*'
+INITIAL_VERSION = '0.9'
+				</code>
+
+				<p>The icon file is also embedded in the file as a base64 encoded string. To replace it with your own file, create a .png image file (34&#215;34 pixels) and run the script below (<a href="base64.py">download</a>) to create the base64 string, then copy it over the existing base64 string in the extension.py file.</p>
+
+				<code data-language="python">
+import sys, base64
+
+if len(sys.argv) == 1:
+	print 'Usage: base64 &lt;filename&gt;'
+	sys.exit(0)
+
+b64 = base64.b64encode(open(sys.argv[1], 'rb').read())
+i = 0
+
+while i &lt; len(b64):
+	print b64[i:i+80]
+	i += 80
+				</code>
+
+				<p>And finally, you can <a href="extension.py">download the python script here</a>. Enjoy :)</p>
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

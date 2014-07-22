@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Chord Image Generator</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Chord Image Generator</h2>
+				<small>
+					Posted: <time>2009-07-23</time> 
+					Last updated: <time datetime="2012-04-18">2012-04-18</time>
+				</small>
+				
+				<p>One of my non-programming related hobbies is playing guitar. I've used a lot of chord sheets and tablature from the internet and have often wanted to be able to print it out in a nicer format than plain ASCII. Chord definitions in online tablatures are usually written something like (xx0232) (a D chord), but I wanted to be able to get these nice chord diagrams like they have in the guitar magazines. So, I wrote my own little online chord image generator.</p>
+
+				<p>Actually what I originally planned to do was create a whole chord sheet editor online, which would accept plain text song files and convert them into nicely formatted sheets ready for printing. They would include non monospace fonts while still having the chords line up correctly with the lyrics, chord diagrams at the top and a nice header with the name and artist. But, since I don't have that much free time and thought I'd probably never complete that project I just created the chord image generator itself. Others can then maybe use it for something like my idea.</p>
+
+				<p>After I had written the chord image generating code itself I decided to make a little test app for it, both to teach people the correct format and just to play with. That little application can be found at <a href="http://chordgenerator.net/">http://chordgenerator.net/</a>. The chord images can have muted and open strings, finger positions, display the beginning fret for chords higher than the first five frets and display below the image which fingers are used for which string. They can also be generated in ten different sizes.</p>
+
+				<p>Lets look at some examples. The format of an url for a chord is: </p>
+
+				<p style="padding-left:10px;">http://chordgenerator.net/[chordname].png?p=[fretpositions]&amp;f=[fingers]&amp;s=[size] </p>
+
+				<p>So, for a normally fingered E chord the url would be:</p>
+
+				<table style="vertical-align:middle; border-style:none;">
+					<tr>
+						<td style="width:90px;">
+							<img src="http://chordgenerator.net/E.png?p=022100&amp;f=-231--&amp;s=2" alt="E chord"/>
+						</td>
+						<td>
+							<a href="http://chordgenerator.net/E.png?p=022100&amp;f=-231--&amp;s=2">http://chordgenerator.net/E.png?p=022100&amp;f=-231--&amp;s=2</a>
+						</td>
+					</tr>
+				</table>
+
+				<p>The name is a simple string. The only thing to remember there is that if you want to use the # symbol you must encode it as %23, because otherwise the browser will not send the rest of the url to the server. If you have two chords with the same name you can differentiate them by naming for example one E5 and the other E5<sup>II</sup>. This is done by writing the name as E5_II, with an underscore before the superscript. Below is an example of a C# chord in size 5</p>
+
+				<table style="vertical-align:middle; border-style:none;">
+					<tr>
+						<td style="width:90px;">
+							<img src="http://chordgenerator.net/C%23.png?p=x4666x&amp;f=-1333-&amp;s=5" alt="C# chord"/>
+						</td>
+						<td>
+							<a href="http://chordgenerator.net/C%23.png?p=x4666x&amp;f=-1333-&amp;s=5">http://chordgenerator.net/C%23.png?p=x4666x&amp;f=-1333-&amp;s=5</a>
+						</td>
+					</tr>
+				</table>
+
+				<p>The fret positions run EAGDBE, use X for muted strings, 0 for open strings and other numbers for fret positions. If you are writing a chord that uses fret positions on and over the 10th fret you must write all the positions with a dash between them. A D bar chord on the 10th fret would then be written as </p>
+
+				<table style="vertical-align:middle; border-style:none;">
+					<tr>
+						<td style="width:90px;">
+							<img src="http://chordgenerator.net/D.png?p=10-12-12-11-10-10&amp;f=134211" alt="D chord on 10th fret"/>
+						</td>
+						<td>
+							<a href="http://chordgenerator.net/D.png?p=10-12-12-11-10-10&amp;f=134211">http://chordgenerator.net/D.png?p=10-12-12-11-10-10&amp;f=134211</a>
+						</td>
+					</tr>
+				</table>
+
+				<p>The fingering positions also run EAGDBE. Use T for thumb, 1 for index finger, 2 for middle finger, 3 for ring finger and 4 for pinky. Use a dash, -, when no finger is on a particular string. Bar chords are inferred, if you write that you are using the same finger for different strings on the same fret, then a line will be drawn through them to indicate a barred chord. An example of that is the D chord above.</p>
+				
+				<p>The size is just a number from 1-10. I like size 2 the best myself, and that is the default.</p>
+
+				<p>You can cut as much off the back of the url as you want. That is, you can skip the size, fingering positions and even fret positions, and they will use defaults instead. Default size is 2, default fingerings mean that no fingerings are written, and default fret positions are none. So, for example the following four urls are all legal (although the last one is not really a D chord since it contains no fret positions):</p>
+
+				<table style="vertical-align:middle; border-style:none;">
+					<tr>
+						<td style="width:90px;">
+							<img src="http://chordgenerator.net/D.png?p=xx0232&amp;f=---132&amp;s=2" alt="D chord fully specified"/>
+						</td>
+						<td>
+							<a href="http://chordgenerator.net/D.png?p=xx0232&amp;f=---132&amp;s=2">http://chordgenerator.net/D.png?p=xx0232&amp;f=---132&amp;s=2</a>
+						</td>
+					</tr>
+					<tr>
+						<td style="width:90px;">
+							<img src="http://chordgenerator.net/D.png?p=xx0232&amp;f=---132" alt="D chord without size parameter"/>
+						</td>
+						<td>
+							<a href="http://chordgenerator.net/D.png?p=xx0232&amp;f=---132">http://chordgenerator.net/D.png?p=xx0232&amp;f=---132</a>
+						</td>
+					</tr>
+					<tr>
+						<td style="width:90px;">
+						<img src="http://chordgenerator.net/D.png?p=xx0232" alt="D chord without fingerings"/>
+					</td>
+					<td>
+						<a href="http://chordgenerator.net/D.png?p=xx0232">http://chordgenerator.net/D.png?p=xx0232</a>
+					</td>
+				</tr>
+				<tr>
+					<td style="width:90px;">
+						<img src="http://chordgenerator.net/D.png" alt="D chord with just a name"/>
+					</td>
+					<td>
+						<a href="http://chordgenerator.net/D.png">http://chordgenerator.net/D.png</a>
+					</td>
+				</tr>
+			</table>
+
+			<p>You are free to link to images directly on http://chordgenerator.net from your own website, although I make no guarantees about uptime, performance or anything like that. The images are cached for a week, so loading time should be fast after the first time.</p>
+		
+			<p>The code for this was written in C# and is licensed under the GPL. The main class is called ChordBoxImage and it can save the generated image in a variety of formats to any output stream. The code for the image generator as well as the little test web site is available on <a href="https://github.com/einaregilsson/ChordImageGenerator">GitHub</a>. Enjoy!</p>
+
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

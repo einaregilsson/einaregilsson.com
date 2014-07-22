@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>ClipboardDiff Visual Studio Extension</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>ClipboardDiff Visual Studio Extension</h2>
+				<small>
+					Posted: <time>2011-04-29</time> 
+					Last updated: <time datetime="2012-04-17">2012-04-17</time>
+				</small>
+			
+				<p class="update"><strong>tl;dr:</strong> I made a Visual Studio 2010 extension, ClipboardDiff, which lets you diff selected text against the contents of the clipboard. <a title="Download the extension" href="http://visualstudiogallery.msdn.microsoft.com/a7519ab0-6029-49f3-9243-a74d1718a5bb">Get it in the Visual Studio Gallery</a>.</p>
+
+				<p><img class="left" title="ClipboardDiff Logo" src="cdlogo.png" alt="ClipboardDiff Logo" width="140" height="140" />At work I sometimes run into "evil twin" methods in our codebase. Those are methods that look almost exactly the same and where one has obviously been copy pasted from the other but then they have gotten out of sync over time. In these cases I try to refactor the two methods into one and add parameters for any behaviour that was different in the two original methods. But it can be hard to tell exactly what has changed between the two methods, especially when they are dozens of lines each. When dealing with this I used to copy each of the methods into their own temp file and then run a diff tool on them. After doing this a few times I got annoyed at the process, and decided to automate it somehow.</p>
+
+				<p>I've been playing around with Visual Studio extensions a lot lately and so I decided to make one for this problem. The extension is called ClipboardDiff and is now available in the Visual Studio Gallery. The idea is that you copy the first part of text you want to compare, then you select the next part you want to compare and then run the command "Diff selection against clipboard". The command is available by right clicking on the selected text, it's at the bottom of the context menu, or you can invoke it with they keyboard combination Alt+Shift+J. If you want to bind it to another keyboard combination just go into Tools-&gt;Customize-&gt;Keyboard and search for "ClipboardDiff", it'll find the command.</p>
+
+				<p><img title="Running the diff command" src="cd.png" alt="Running the diff command" width="522" height="381" /></p>
+
+				<p>You can self choose which diff tool to use, to configure it go to Tools-&gt;ClipboardDiff settings and there you can enter the path to your diff tool of choice, and the arguments you want to pass to it. The placeholder values $FILE1$ and $FILE2$ will be replaced by the temp file names once you invoke the diff command. ClipboardDiff knows the default locations of a few diff programs, so if you have Perforce Merge, Tortoise Diff or WinMerge installed you won't have to configure anything (Those are just the tools I happened to have installed on my machine). If you haven't configured which tool to use the Settings window will be opened the first time you try to run a diff.</p>
+
+				<p><img title="Configure which diff tool to use" src="settings.png" alt="Configure which diff tool to use" width="560" height="145" /></p>
+
+				<p>You can <a title="Download the extension" href="http://visualstudiogallery.msdn.microsoft.com/a7519ab0-6029-49f3-9243-a74d1718a5bb">download the extension in the Visual Studio Gallery</a> and the source, as always, is GPL'd and available on Github at <a href="https://github.com/einaregilsson/ClipboardDiff">https://github.com/einaregilsson/ClipboardDiff</a>. Enjoy!</p>
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

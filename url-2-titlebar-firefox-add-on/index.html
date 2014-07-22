@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>URL-2-Titlebar Firefox Add-on</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>URL-2-Titlebar Firefox Add-on</h2>
+				<small>
+					Posted: <time>2009-09-25</time> 
+					Last updated: <time datetime="2012-04-18">2012-04-18</time>
+				</small>
+			
+				<p>Recently I got a request in the mail from a user of one of my Firefox add-ons. He asked me if I could make an add-on that displayed the url of the current tab in the titlebar instead of the actual title of the page being shown. I'm not interested in creating more add-ons for Firefox or Thunderbird, they take up quite a lot of time with user requests, getting approved by <a href="http://addons.mozilla.org">the Mozilla addons site</a>, etc. That is why I've discontinued 6 out of the 9 add-ons I've created. But anyway, I knew that it would be trivial to make this add-on so I decided to help this person out.</p>
+
+				<p>You can <a href="url2titlebar.xpi">download the add-on</a> here. This add-on will never be updated or published on AMO, it is offered strictly as-is. The one thing I found interesting about this was figuring out how to do the absolute minimum to get this add-on working. There is no localization, no folder structure, just three files, install.rdf, chrome.manifest and url2titlebar.xul. Put those into a zip file, rename it to .xpi and you have your extension. These of course are not best practices in extension development, just an exercise in making the simplest extension possible. Below is the full content of the three files:</p>
+
+				<h4>url2titlebar.xul</h4>
+				<code data-language="xml">&lt;?xml version="1.0" encoding="UTF-8">
+&lt;overlay 
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  &lt;script>
+    window.addEventListener('load', function() {
+      function setTitle() {
+        document.title = gBrowser.selectedBrowser.contentDocument.location;
+      }
+      gBrowser.tabContainer.addEventListener('TabSelect', setTitle, false);
+      document.addEventListener('pageshow', setTitle, false);
+      setTitle();
+    },false);
+  &lt;script>
+&lt;/overlay></code>
+
+				<h4>chrome.manifest</h4>
+
+				<code data-language="xml">content url2titlebar file:./
+overlay chrome://browser/content/browser.xul chrome://url2titlebar/content/url2titlebar.xul</code>
+
+				<h4>install.rdf</h4>
+
+				<code data-language="xml">&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+ xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+  &lt;Description about="urn:mozilla:install-manifest">
+    &lt;em:id>url2titlebar@einaregilsson.com&lt;/em:id>
+    &lt;em:name>URL-2-Titlebar&lt;/em:name>
+    &lt;em:version>0.0.1&lt;/em:version>
+    &lt;em:creator>Einar Egilsson&lt;/em:creator>
+    &lt;em:description>Set the title of the window to the current url&lt;/em:description>
+    &lt;em:targetApplication>
+      &lt;Description>
+        &lt;em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}&lt;/em:id> &lt;!-- firefox -->
+        &lt;em:minVersion>3.0&lt;/em:minVersion>
+        &lt;em:maxVersion>3.5.*&lt;/em:maxVersion>
+      &lt;/Description>
+    &lt;/em:targetApplication>
+  &lt;/Description>
+&lt;/RDF></code>
+
+				<p>So, there you have it, the simplest possible Firefox add-on. Enjoy!</p>
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

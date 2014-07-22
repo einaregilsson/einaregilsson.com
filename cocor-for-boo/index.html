@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Coco/R for Boo</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Coco/R for Boo</h2>
+				<small>
+					Posted: <time>2009-01-29</time> 
+					Last updated: <time datetime="2012-04-18">2012-04-18</time>
+				</small>
+			
+				<p>I'm currently doing my masters thesis, and as part of it I needed to implement a simple compiler for the .NET runtime, the CLR. I just recently started playing around with the <a href="http://boo.codehaus.org">Boo language</a>, which is a statically typed .NET language with very similar syntax to Python and many of its features, while still being statically typed and offering some nice extra features such as regular expression literals and string interpolation. I wanted to try the language out on a small project so I decided to use it to write my little compiler. The only problem was that as far as I could tell there were no available parser generators for Boo. (There might well be some, I must admit I didn't really look very hard). The only parser generator I'm used to using is <a href="http://www.ssw.uni-linz.ac.at/Research/Projects/Coco/">Coco/R</a>, which is nice and simple to use, and available for many languages, although not for Boo. It is however <a href="http://www.ssw.uni-linz.ac.at/Research/Projects/Coco/#CS">available for C#</a> so I decided to modify it myself to make it output Boo code.</p>
+				
+				<p>I took the frame files for the scanner and parser from the C# version and initially converted them to Boo using the excellent <a href="http://codeconverter.sharpdevelop.net/SnippetConverter.aspx">Snippet Converter for .NET 2.0</a> which is made by the makers of <a href="http://sharpdevelop.net/OpenSource/SD/Default.aspx">SharpDevelop</a>. That did about 60+ % of the work for me, but I still needed to tweak a lot of stuff manually. I then altered the source for Coco itself (which is open source under the GPL) to output the correct Boo code instead of C# code. It took quite some time to get all the whitespace issues correct (Boo has scopes defined by indentation like Python) but finally it worked well enough for my little project.</p>
+
+				<p>I needed to make some slight adjustments to the way Coco output code inside (. .) which marks the users code inside the attributed grammar file (.atg). Since Boo is indentation sensitive I made it work so that in a multiline block, lines 2-n just need to be indented correctly relative to each other, and they will then be correctly inserted into the parser. So the best way to create a multiline code block is to open the code block with (., indent 1 tab character, and then use the tab button to align subsequent lines with the first one correctly. Don't think about how many tabs are in front of your lines in absolute terms, just make them line up with each other. The first line is a bit of a special case, since it starts right after a (. and so doesn't have the same amount of preceding tabs as the other lines. You don't really have to think about it, except to watch out for one thing: Don't end the first line with a comment if it is a line that starts a block!. So if your first line is </p>
+
+				<pre class="textfile">    if 1 &lt; 4:</pre>
+
+				<p>don't have it like </p>
+
+				<pre class="textfile">    if 1 &lt; 4:#Now do something</pre>
+
+				<p>The reason for this is that Coco looks to see if the first line ends with a colon : and if so it indents all subsequent lines one extra tab. Another thing to make sure of is to always indent with tabs, never spaces! Below is a small example from the little language I was working with:</p>
+				
+				<pre class="textfile">
+UnaryOperator&lt;ref exp as While.AST.Expression&gt;  (.  op as string = null .)
+=
+    [
+    '-'                       (.  op = t.val .)
+    |
+    '~'                       (. op = t.val .)
+    ]
+    Terminal&lt;exp&gt;       (.  if op == '-':
+                                exp = While.AST.MinusUnaryOp(exp)
+                            elif op == '~':
+                                exp = While.AST.NotUnaryOp(exp) .)
+.
+				</pre>
+
+				<p>I'm making the Coco/R for Boo generator available here for download. However, I just modified it enough to make it work for my particular project, so there is no guarantee that it correctly outputs Boo code for all features of Coco/R. For instance I did not use weak seperators or conflict resolvers so I don't know if those would be output correctly. If you use this and have some problems, feel free to send me your .atg file and I'll see if there is something in Coco that needs to be adjusted to make it work for that particular case. As it is I'm not especially motivated to try to figure out every possible scenario that could arise in every possible grammar, instead I'll look at it if and when it comes up. </p>
+
+				<p>I'm also including the Boo files for my little language project, as an example of how to construct an ATG file for a Boo parser and scanner. So far it is a simple AST walking interpreter for a language used in my Program Analysis class. The language is called While and it's syntax is:</p>
+
+				<pre class="textfile">
+a is an arithmetic expression
+b is a boolean expression
+x is a variable name
+n is an integer
+S is a statement
+D is a declaration
+
+a ::= x | n | a<sub>1</sub> op<sub>a</sub> a<sub>2</sub>
+b ::= true | false | !b | b<sub>1</sub> op<sub>l</sub> b<sub>2</sub>| a<sub>1</sub> op<sub>r</sub> a<sub>2</sub>
+S ::= x := a | skip | S<sub>1</sub>;S<sub>2</sub> | if b then S<sub>1</sub> else S<sub>2</sub> fi 
+           | while b do S od | begin D; S end
+D ::= var x | D;D
+
+op<sub>a</sub> is one of +, -, /, *, %, |, &amp;, ^
+op<sub>r</sub> is one of &lt;, >, &lt;=, >=, ==, !=
+op<sub>l</sub> is one of &amp;&amp;, ||, ^
+				</pre>
+				
+				<p>The While.zip file includes the sources for the AST, the Coco executable and a batch file to generate the parser and scanner and build the project using the Boo compiler. After it's been built it can be run with an example file with the following command: <strong>while.exe fibonacce.while</strong>.</p>
+
+				<table>
+					<tr>
+						<td><a href="Coco.exe">Coco.exe</a></td>
+						<td>The executable</td>
+					</tr>
+					<tr>
+						<td><a href="Scanner.frame">Scanner.frame</a></td>
+						<td>Frame file for a Boo scanner</td>
+					</tr>
+					<tr>
+						<td><a href="Parser.frame">Parser.frame</a></td>
+						<td>Frame file for a Boo parser</td>
+					</tr>
+					<tr>
+						<td><a href="CocoSources.zip">CocoSources.zip</a></td>
+						<td>C# source for the Coco parser generator</td>
+					</tr>
+					<tr>
+						<td><a href="While.zip">While.zip</a></td>
+						<td>Source and atg files for the While language, good example of Coco use.</td>
+					</tr>
+				</table>
+
+				<p>Final note: The Coco sources do not include the .ATG file for Coco's own parser, like the C# version does. The reason for this is that I thought it would be confusing to include them, since built generator can't do anything with them since it generates Boo code. If you want to change Coco's own parser for the ATG files you can get that from the C# version.</p>
+
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Developing ASP.NET 1.1 in Visual Studio 2008</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Developing ASP.NET 1.1 in Visual Studio 2008</h2>
+				<small>
+					Posted: <time>2008-01-15</time> 
+					Last updated: <time datetime="2012-04-18">2012-04-18</time>
+				</small>
+			
+				<p>I have an old ASP.NET 1.1 application that I have to maintain and which for reasons beyond my control can't be updated to a later .net version. I hadn't touched it in a few months but recently I had to make some small changes and realized I didn't even have Visual Studio 2003 anymore. I got a new computer a few months ago and I have Visual Studio 2008 and IIS 7 on it but no VS 2003. I didn't really want to install it, it's pretty old at this point and not very well supported in Vista, and like most programmers I like to play with the shiny new toys, not the old obsolete ones. So I decided to try to maintain this application in Visual Studio 2008. Now, VS 2008 can target different versions of the .NET framework, but only 2.0, 3.0 and 3.5 so I was out of luck. But, thanks to a nice article I found by Jomo Fisher on compiling .NET 1.1 in VS2005 and some extra hacking I got it working pretty well. My setup was IIS 7 on Windows Vista, IIS 6 on Windows XP is pretty much the same although some of the options I point to may be located in different places. So, here's what you need to do to develop ASP.NET 1.1 in Visual Studio 2008:</p>
+
+				<h4>IIS Setup</h4>
+
+				<p>Install the .NET 1.1 framework on your computer if it's not already installed. Then start a command prompt as an administrator and then type  <strong>%WINDIR%Microsoft.NETFrameworkv1.1.4322aspnet_regiis -i</strong>. This will setup asp.net 1.1 to work with IIS 7. Next you should open up the IIS manager. Select "Application pools", and under "Actions" on the right side of the screen select "Add application pool". Give the new application pool a name, for instance "Asp.net 1.1", set the framework version to "v1.1.4322" and pipeline mode to "classic". Save the application pool.</p>
+ 
+				<h4>Compilation</h4>
+
+				<p>Jomo Fisher figured out a very nice way to use the C# 1.1 compiler in Visual Studio 2005 by manipulating some MSBuild target files. <a href="http://blogs.msdn.com/jomo_fisher/archive/2005/04/22/410903.aspx">Follow his instructions</a> for all the  projects in your solution. When that works, goto the project properties, goto the "Build" tab and set "Output path" to "bin". Jomo's method sets the output path to "bin\Net1.1Debug" by default which won't work for a web application, it needs the assemblies to be directly in the bin folder. Now you should be able to compile your web. If you try any .NET 2.0 specific stuff, like <span class="inline-code">public class F&lt;T&gt;{}</span> you should get a compilation error.</p>
+  
+				<h4>Debugging</h4>
+
+				<p>If you want to debug your web using the .NET 1.1 framework you can't use the Visual Studio built-in webserver. That webserver uses the .NET 2.0 framework and even though you've compiled your assemblies using the C# 1.1 compiler, there's still the aspx pages themselves that need to be compiled and we want that to happen with the C# 1.1 compiler too. Otherwise you might run into a situation where you think your web is completely working in asp.net 1.1, then you deploy to an actual 1.1 server and it'll crash if you accidentally used some 2.0 specific stuff in your aspx files. So what we do is this: Goto project properties and the "Web" tab. Under the "Servers" section change it so that you've selected "Use IIS Web server". This will show you your project url which you can change. Then press the "Create virtual directory" button. You MUST have started Visual Studio as administrator for this to work. Once you've done this you should go back to the IIS manager where you can now see your new virtual directory. Right click on it, press "Advanced Settings" and there, under "Behavior", you can select which application pool to use. Change it so that it uses your brand new 1.1 application pool.</p>
+ 
+				<h4>Designer support</h4>
+
+				<p>I've got good news and bad news. The good news is that you will be able to view your pages in the designer and lay out things and it will generate the aspx file correctly for you. The bad news is that it won't generate the codebehind member variables for you. But theres not much to it, all it means is that when you've added a button and given it an id of "btnDoStuff" then you should in your .aspx.cs file create a variable <span class="inline-code">protected Button btnDoStuff;</span>. It's a little annoying but you get used to it. It shouldn't be too hard to write your own macro to generate members from tags, maybe I'll do it someday (or not). Whenever you add a new page you'll get compilation errors because of the partial classes. What I usually do is delete the .designer.cs file and remove the "partial" keyword from the main class. There's also a using statement that references <span class="inline-code">System.Web.UI.WebControls.WebParts</span> that you'll have to delete.</p>
+
+				<p>I tried one approach which was to have a pre-build event that changed the name of the class in the .designer.cs file and removed the "partial" keyword. Then I made my normal class inherit from that class. That worked sometimes but sometimes members would just stop being generated so in the end I figured it wasn't worth it and just started deleting the .designer.cs files instead. I still think creating your own macro to generate such a base class could be a good idea though.</p>
+
+				<h4>Other issues</h4>
+
+				<p>There are some other issues you might run into. Web.Config is one of them. You must remove stuff that wasn't there in 1.1, like the &lt;connectionStrings /&gt; section.  Other than that I don't know of any major changes, but then again my Web.Config is really simple. And then you have to make sure yourself that you don't try to use any of the stuff that wasn't in 1.1. That means no masterpages, generics, partial classes or any of the new webcontrols that came with 2.0. Another thing you should be aware of is that you always need to run Visual Studio as administrator for the debugging to work.</p>
+ 
+				<p>And that's it. This worked for me, I don't know if it'll work for you. There's some hassle involved, but for me, having some of the cool VS2008 stuff available (hello javascript intellisense) more than makes up for it.</p>
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

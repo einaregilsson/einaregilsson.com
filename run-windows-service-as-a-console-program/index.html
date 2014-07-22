@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Run Windows Service as a console program</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Run Windows Service as a console program</h2>
+				<small>
+					Posted: <time>2007-08-15</time> 
+					Last updated: <time datetime="2012-04-18">2012-04-18</time>
+				</small>
+			
+				<p>Visual Studio and the .NET framework make it really easy to create Windows Services. All you have to do is create a new project, select "Windows Service" as your project type and you're all set. However, debugging Windows Services in Visual Studio can be a big pain. The recommended way is to use InstallUtil to install them, and then restart the service and attach the debugger everytime you want to debug it. I wanted <a href="/projects/windows-live-bot/">Windows Live! Bot</a> to be available as a Windows Service, but I also wanted to be able to debug it without the hassle, so here's what I came up with:</p> <span id="more-52"></span>
+
+				<code data-language="csharp">
+using System;
+using System.ServiceProcess;
+
+public partial class DemoService : ServiceBase
+{
+	static void Main(string[] args)
+	{
+		DemoService service = new DemoService();
+
+		if (Environment.UserInteractive)
+		{
+			service.OnStart(args);
+			Console.WriteLine("Press any key to stop program");
+			Console.Read();
+			service.OnStop();
+		}
+		else
+		{
+			ServiceBase.Run(service);
+		}
+
+	}
+	public DemoService()
+	{
+		InitializeComponent();
+	}
+
+	protected override void OnStart(string[] args)
+	{
+		// TODO: Add code here to start your service.
+	}
+
+	protected override void OnStop()
+	{
+		// TODO: Add code here to perform any tear-down
+		//necessary to stop your service.
+	}
+}
+				</code>
+
+				<p>This will allow you to use your program as either a normal console program or a windows service, with no special builds, #DEBUG directives, command line parameters or anything like that. What it does is in the Main method it checks the "Environment.UserInteractive" property. This will be true when it is run from Visual Studio, or when you just click on the .exe file, but false if it's being run as a service. When it's run from Visual Studio or as a standalone program it will keep running until you press a key, then it will call your OnStop method and then terminate.</p>
+
+				<p>Two things to watch out for:</p>
+
+				<ol>
+					<li>You'll have to right click on your project in Visual Studio, choose Properties and select the Output type as "Console application" for this to work.</li>
+					<li>If your Main method is not in your service class, you'll have to add public methods to your class that can start and stop it, for instance add a <strong>public void StartConsole(string[] args)</strong> that just calls your OnStart, since OnStart and OnStop are protected methods and as such not accessible from other classes.</li>
+				</ol>
+
+				<p>While using this trick has worked perfectly well for my services, which have all been pretty simple, it might not work for everyone. I'm sure there are a few things different between Windows Services and console programs that I don't know about, and might make the console version of the program behave strangely in some cases. It has also been pointed out that there is no way to test pause-and-resume in the console version. The best way I could think of to mimic service events like these would be to read in keypresses in the main thread and do the appropriate action depending on the key pressed. For instance, instead of the "Press any key to exit" message, we might have "Press p to pause, r to resume, s to stop" and then the result of Console.Read() could be used to determine which action to take and which methods to call on the Service objects. However, I don't have the time and interest to do it right now, so implementing it is left as an exercise for the reader :)</p>
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

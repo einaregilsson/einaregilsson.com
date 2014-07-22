@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Unit testing model classes in Google App Engine</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Unit testing model classes in Google App Engine</h2>
+				<small>
+					Posted: <time>2010-10-11</time>
+					Last updated: <time datetime="2012-04-17">2012-04-17</time>
+				</small>
+			
+				<p>I'm currently writing my first <a href="http://appengine.google.com">Google App Engine</a> app. I've created a few model classes which inherit from db.Model and I wanted to unit test them. That works fine until you try to save them to the datastore or retrieve them. Then you might get this error:</p>
+
+				<p class="console">BadArgumentError: app must not be empty.</p>
+
+				<p>The problem here is that you need an environment variable with your app id, which you can set with the following code:</p>
+
+				<code data-language="python">os.environ['APPLICATION_ID'] = 'myapp'</code>
+
+				<p>After you do that you'll get this error:</p>
+
+				<p class="console">AssertionError: No api proxy found for service "datastore_v3"</p>
+
+				<p>To fix that one you need the following lines in your test setup:</p>
+
+				<code data-language="python">
+datastore_file = '/dev/null' 
+from google.appengine.api import apiproxy_stub_map,datastore_file_stub
+apiproxy_stub_map.apiproxy = apiproxy_stub_map.APIProxyStubMap() 
+stub = datastore_file_stub.DatastoreFileStub('myapp', datastore_file, '/')
+apiproxy_stub_map.apiproxy.RegisterStub('datastore_v3', stub)
+				</code>
+
+				<p>Temp datastore is persisted just while you run your tests. But you can also give the datastore_file variable a real filename and then it will save the datastore between tests, or you could create different datastore files for different scenarios.</p>
+
+				<p>Finally, to put it all together, here is the setUp method for my TestCase classes:</p>
+
+				<code data-language="python">
+class SomeTestCase(unittest.TestCase):
+	def setUp(self):
+		app_id = 'myapp' 
+		os.environ['APPLICATION_ID'] = app_id
+		datastore_file = '/dev/null' 
+		from google.appengine.api import apiproxy_stub_map,datastore_file_stub
+		apiproxy_stub_map.apiproxy = apiproxy_stub_map.APIProxyStubMap() 
+		stub = datastore_file_stub.DatastoreFileStub(app_id, datastore_file, '/')
+		apiproxy_stub_map.apiproxy.RegisterStub('datastore_v3', stub)
+				</code>
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

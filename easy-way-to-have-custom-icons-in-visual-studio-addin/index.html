@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Easy way to have custom icons in Visual Studio AddIn</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Easy way to have custom icons in Visual Studio AddIn</h2>
+				<small>
+					Posted: <time>2009-11-20</time> 
+					Last updated: <time datetime="2012-04-17">2012-04-17</time>
+				</small>
+			
+				<p>I've recently been developing a Visual Studio AddIn and I wanted to use custom icons for a command I had. Looking for a solution I found the <a href="http://msdn.microsoft.com/en-us/library/ms228771.aspx">offical MSDN article on the subject</a>, that might possibly be the most misleading and useless article ever. Add the resource file in Visual Studio, then exclude from project, rename your images to numbers, edit with Notepad and then build satellite assemblies on the commandline? Really? That is a horrible way to do it and not at all necessary. I've found a very simple and easy way to add these icons without all that hassle.</p>
+
+				<p>There are a couple of other articles out there that approach the problem in a different way. Roy Osherove has an <a href="http://weblogs.asp.net/rosherove/archive/2008/08/02/howto-set-custom-visual-studio-addin-menu-icons-without-a-satellite-dll.aspx">article</a> where he shows how you can add icons without having satellite assemblies for them, but that has &gt; 350 lines of code for loading the images yourself including P/Invokes and all sorts of stuff, and I didn't really need such a heavyweight solution. To be fair, his solution does give you the ability to use .ico files as well, and offers transparency, but transparency can be achieved in an easier way.</p>
+
+				<p>I also found <a href="http://www.mztools.com/articles/2005/MZ2005007.aspx">another article</a> that shows how you can get transparency by using a special color that, as far as I know, is not documented anywhere officially. It also shows you how you can build a satellite assembly from Visual Studio without resorting to Notepad and the command line tools, but this approach uses a special project for the satellite assembly, which is completely unneccessary.</p>
+
+				<p>So, finally, my approach, which is really a refinement of the last article I mentioned. If your add-in is meant for only VS2008 then you can get away with having no satellite assembly, VS2008 falls back to looking in your main assembly for the resources if it doesn't find a satellite assembly. If you want to support VS2005 you must have a satellite assembly for it to work.</p>
+
+				<p>So, assume we have a project named MyProject which will compile to an assembly called MyProject.dll. Here's what you do:</p>
+
+				<ol>
+					<li>Add a new "resources" item to the project and give it the name "MyProject.en.resx".</li>
+					<li>Go the properties for the item and set the "Custom Tool" field to nothing. This will remove the auto-generated code for the .resx file</li>
+					<li>Double click on the .resx file, this opens up the resource editor. There you can add an existing image (Add Resource-&gt;Add existing file). The image should be a 16x16 pixel bitmap image. It must be in True Color format. True Color is the same as a 24-bit bitmap.</li>
+					<li>If you want transparency in your image then use the special color: Red:0 , Green:254, Blue:0 . Note that it really is 254, NOT 255.</li>
+					<li>In the resource editor, give your image a name that is a number, e.g. 1. Note that you did not have to change the filename of your image file, just its name in the resource file.</li>
+					<li>
+						Now add your command in your add-in file like so:
+
+						<code data-language="csharp">
+commands.AddNamedCommand2(_addInInstance, "MyProject",
+	  "MyProject", "Executes the command for MyProject",
+	  false,
+	  1,
+	  ref contextGUIDS,
+	  (int)vsCommandStatus.vsCommandStatusSupported +
+	  (int)vsCommandStatus.vsCommandStatusEnabled,
+	  (int)vsCommandStyle.vsCommandStylePictAndText,
+	  vsCommandControlType.vsCommandControlTypeButton);
+						</code>
+						There you must send in <strong>false</strong> and then the number you gave the icon in your .resx file, e.g. 1.</li>
+				</ol>
+
+				<p>Now when you compile your solution, a satellite assembly with the name MyProject.resources.dll will automatically be created and put in a "en" subfolder of your output folder. If you only want to support VS2008 and don't want satellite assemblies then you can name the .resx file just MyProject.resx instead, then no satellite assemblies will be created and the resources will be embedded in the main assembly.</p>
+
+				<p>And that's it. Add more resources in Visual Studio, have things compile automatically and don't touch command line tools, notepad, hundreds of lines of custom code or anything like that. I *think* it is enough to just have the "en" resources dll even if you use another locale, I'm pretty sure Visual Studio falls back to that if it doesn't find a satellite assembly in your current culture. At least I have my Windows set up for Danish, but my "en" satellite assembly works just fine for me. Although, there doesn't exist a Danish version of Visual Studio, maybe this works differently for localized Visual Studio, e.g. the German version. If someone has one of those and can test I'd love to know whether it falls back to "en" if nothing else is available. If it doesn't then just create a few more MyProject.de.resx, MyProject.es.resx etc. to get more satellite assemblies. But like I said before, VS2008 and later doesn't need this, so for that case just have the one MyProject.resx file.</p>
+
+				<p>I've made the small MyProject example and it can be <a href="MyProjectAddIn.zip">downloaded here</a>. Let me know if this works (or doesn't) for you. Enjoy!</p>
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

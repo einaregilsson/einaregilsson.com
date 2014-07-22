@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Spades</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Spades</h2>
+				<small>
+					Posted: <time>2011-11-07</time> 
+					Last updated: <time datetime="2012-04-17">2012-04-17</time>
+				</small>
+			
+				<p>Yet another card game finished. The last card game I created was <a href="http://www.hearts-cardgame.com">Hearts</a>, which is a trick taking game, but you play on your own. This time I wanted to create a game where you play in teams, so a human player and a computer player work together against two other computer players. So I created <a href="http://www.spades-cardgame.com">Spades</a>, a nice trick taking game where you play in teams and must bid before each hand how many tricks you think you'll take. </p>
+
+				<p>It was an interesting game to implement, especially making the computer players work sensibly with their partners. Usually you want to get as many tricks as possible, but you can also bid 0, and then you can't take any trick, and your partner has to try to help you out if he sees that you are about to take the trick. You also have to be careful to not get too many tricks above your bid, since if you get 10 tricks more (over the course of a few hands) you'll get a big penalty.</p>
+
+				<p>I can track the win percentage of the human team and the computer team, so far the computer team only wins about 35% of its games, but it's a nice challenge to try to make it win more. And now that the game is live, and has lots of plays every day it's a lot of fun to tweak the computer players, publish the new version and then see the next day if the win percentage goes up or down.</p>
+
+				<p>For my next project I think I'll do something different. I've purchased the domain <a href="http://solitaire-cardgame.com">http://solitaire-cardgame.com</a> and am going to try to create Klondike (classic solitaire) first, if that's fun then I'll probably add a few others later on.</p>
+			
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

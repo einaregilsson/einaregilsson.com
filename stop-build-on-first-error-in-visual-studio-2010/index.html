@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Stop Build on first error in Visual Studio 2010</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Stop Build on first error in Visual Studio 2010</h2>
+				<small>
+					Posted: <time>2011-01-06</time> 
+					Last updated: <time datetime="2012-04-17">2012-04-17</time>
+				</small>
+			
+				<p class="update"><strong>tl;dr:</strong> StopOnFirstBuildError is a Visual Studio 2010 and 2012 extension that cancels the rest of a solution build if a single project fails to compile, thus saving you time. <a href="http://visualstudiogallery.msdn.microsoft.com/en-us/91aaa139-5d3c-43a7-b39f-369196a84fa5">Download it in the Visual Studio Gallery</a>.</p>
+
+				<p>At work I often work on a solution that has around 25 projects. When one of the projects fails to build, Visual Studio insists on trying to build the rest of the projects, even though at that point I don't want it to, since I'm never going to run the program when some of the projects have failed. Often the other projects depend on the project that failed, and the error list gets filled with errors from those projects that just obscure the root cause of the problem. So, I figured I could probably do something about it.</p>
+
+				<p>I googled around for a solution and found a <a href="http://msdn.microsoft.com/en-us/library/microsoft.build.tasks.msbuild.stoponfirstfailure.aspx">StopOnFirstFailure</a> property in MSBuild that sounded promising, but I couldn't find any good way to hook into the VS-&gt;MSBuild relationship. I'm sure there is some way to do this, so if anyone knows, please let me know. The next thing I found was a <a href="http://stevedunns.blogspot.com/2006/10/visual-studio-build-tip.html">tip from Steve Dunn</a>. It's a nice little macro that listens for an event that is fired after each project is built, and calls the Cancel Build command if a project has failed to build. You just open the Macro IDE, open the EnvironmentEvents.vb file and paste the following code in at the bottom:</p>
+
+				<code data-language="vb">
+Private Sub BuildEvents_OnBuildProjConfigDone(
+                   _ ByVal Project As String, 
+                   _ ByVal ProjectConfig As String, 
+                   _ ByVal Platform As String, 
+                   _ ByVal SolutionConfig As String, 
+                   _ ByVal Success As Boolean) Handles BuildEvents.OnBuildProjConfigDone     
+    If Success = False Then 'The build failed...cancel any further builds.     
+        DTE.ExecuteCommand("Build.Cancel")   
+    End If 
+End Sub
+				</code>
+
+				<p>This does 95% of what I wanted to do. But still, I'm not a big fan of Visual Studio Macros, I prefer extensions where possible so I can easily see in one place what things I have installed instead of digging through the Macro projects. I also wanted to activate the error window after cancelling the build and be able to turn this on and off easily. So, I made an extension out of it. The main thing in it is still the macro code from Steve Dunn above, but in addition the extension:</p>
+
+				<ul>
+					<li>Activates the error list after cancelling the build.</li>
+					<li>Prints a message to the Build output window, saying why the build was cancelled.</li>
+					<li>Adds a menu item to the Build menu, "Stop Build on first error", which you can use to turn the functionality on and off easily.</li>
+					<li>Is context aware, the menu item and functionality are only available in multi-project solutions, since it would be pretty useless in a single project solution.</li>
+				</ul>
+
+				<p>And that's it. You can <a href="http://visualstudiogallery.msdn.microsoft.com/en-us/91aaa139-5d3c-43a7-b39f-369196a84fa5">download the extension</a> in the Visual Studio Gallery, get the GPL'd source code at <a href="https://github.com/einaregilsson/StopOnFirstBuildError">https://github.com/einaregilsson/StopOnFirstBuildError</a> and follow me on Twitter <a href="http://twitter.com/einaregilsson">@einaregilsson</a> to get notified of updates and other new extensions. Enjoy!</p>
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

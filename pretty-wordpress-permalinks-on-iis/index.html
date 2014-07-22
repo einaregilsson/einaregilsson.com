@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Pretty Wordpress Permalinks on IIS</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Pretty WordPress Permalinks on IIS</h2>
+				<small>
+					Posted: <time>2007-07-30</time> 
+					Last updated: <time datetime="2012-04-18">2012-04-18</time>
+				</small>
+				
+				<p class="update"><strong>UPDATE 16.09.2009:</strong> I don't update this script anymore, it might not work on newer versions of WordPress. An updated, more robust solution can be found at <a href="http://www.ikailo.com/94/url-modrewrite-workaround-iis-60/">http://www.ikailo.com/94/url-modrewrite-workaround-iis-60/</a>, go there if the solution below causes problems for your site.</p>
+
+				<p>I've been searching the web a bit for a way to make pretty permalinks work correctly on this site. The site is hosted on IIS so using mod_rewrite won't work, and it's on a shared server so the option of installing a mod_rewrite alternative for IIS won't work either. I could get away with having almost pretty urls, with a index.php in them, like this: http://einaregilsson.com/index.php/2007/07/30/pretty-wordpress-permalinks-on-iis/ but I didn't like it. </p>
+
+				<p>The <a href="http://codex.wordpress.org/Using_Permalinks">Using Permalinks</a> section on the WordPress page has a lot of info on this and it links to one <a href="http://www.keyboardface.com/iis-permalinks/">solution that uses custom 404 pages</a> to make this work but unfortunately I don't think it's a very good solution at all. What it does is parse the url from the 404 string, then re-implement all the rewrite url matching itself, make its own http request to the correct url, then write the data from that request into the response. It's a good effort but it's duplicating functionality already in WordPress and making a new http request for every page hit which I don't like. After searching around some more I found <a href="http://wordpress.org/support/topic/36214">another 404 page solution</a> that is very simple and elegant. All you have to do is create a 404 page and put the following 4 lines in it:</p>
+
+				<code data-language="php">
+&lt;?php
+$qs = $_SERVER['QUERY_STRING'];
+$pos = strrpos($qs, '://');
+$pos = strpos($qs, '/', $pos + 4);
+$_SERVER['REQUEST_URI'] = substr($qs, $pos);
+$_SERVER['PATH_INFO'] = $_SERVER['REQUEST_URI'];
+include('index.php');
+?>
+				</code>
+
+				<p>All this does is fix the REQUEST_URI and PATH_INFO variables and then include index.php, so WordPress will do the rest. It's simple, it doesn't duplicate functionality already in WordPress and it doesn't have the overhead of another http request for every page hit. The installation steps are:</p>
+
+				<ol>
+					<li>Create the file wp-404-handler.php in your base WordPress folder. (you can also <a href="wp-404-handler.php">download it here</a>).</li>
+					<li>Set your sites 404 page to point to the wp-404-handler.php url. Most control panels at web hosts allow you to do this. If you've got the option to select between FILE and URL then choose URL.</li>
+					<li>
+						Go to Options -&gt; Permalinks in your WordPress admin page, and choose an appropriate structure for your links. I chose Custom with this pattern:
+
+						<code>/%year%/%monthnum%/%day%/%postname%/ </code>
+					</li>
+					<li>Enjoy!</li>
+				</ol>
+
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>ZenPhoto Uploader</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>ZenPhoto Uploader</h2>
+				<small>
+					Posted: <time>2009-07-20</time> 
+					Last updated: <time datetime="2012-04-18">2012-04-18</time>
+				</small>
+			
+				<p class="update"><strong>UPDATE 2012-04-18:</strong> I haven't used ZenPhoto myself in more than 2 years now. This program won't work with newer versions of ZenPhoto, and I have no plans to update it. Feel free to download it and modify the source code to get it working again.</p>
+
+				<p>The photo album software I use to store my photos on the web is <a href="http://zenphoto.org">ZenPhoto</a>. It is a very nice photo gallery system, with themes, lots of plugins, nice administrative interface and plenty of other good stuff. The only problem I had with it was getting my photos uploaded. Sure, they offer a web interface, or you can upload a zip file, or use FTP but I usually need to preprocess my photos a bit. Rotate them, throw out the ones I don't want to upload, and most of all I need to make them smaller, uploading them in the size I use on my camera takes forever. So, I decided to make a simple program to do these things for me.<img class="right" title="ZenPhoto Uploader screenshot" src="screenshot.jpg" alt="ZenPhoto Uploader screenshot" width="300" height="224" /></p>
+
+				<p>I had previously used the program <a href="http://www.ornj.net/webalbum/">Web Album Generator</a> to make static html albums. I really liked its interface so I mostly copied it for my own program, ZenPhoto Uploader. Theres a list of the images on the left side and on the right side is a toolbar with all available operations, a big preview screen and textboxes for adding titles and descriptions.</p>
+
+				<p>The program is ONLY meant for uploading albums for the first time, not for working with albums once they are uploaded. The main features of the program are:</p>
+
+				<ul>
+					<li>Create new albums (with descriptions) and upload images (obviously)</li>
+					<li>Resize photos before uploading</li>
+					<li>Rotate photos</li>
+					<li>Order photos in album</li>
+					<li>Remove photos from album and optionally delete the file itself</li>
+					<li>Save titles and descriptions for photos</li>
+					<li>Keyboard shortcuts for almost all actions</li>
+				</ul>
+
+				<p>The program is very much "me-ware". I made it to scratch my own itch, it may not fit or feel right to anyone else. It was thrown together and is fixed as I run into bugs while using it. It may well contain errors and might crash horribly. That said, everyone is welcome to use it and improve upon it if they wish. Just know that <strong>you are using this at your own risk. I cannot be held liable for any damages or problems this program may cause. It contains commands that you can use to delete photos from your hard disk, use it carefully and think about what you are doing</strong>.</p>
+
+				<p>Probably my favorite feature of the program is the ability to do everything from the keyboard. The available shortcuts are:</p>
+				<ul>
+					<li>CTRL+U: Open the upload dialog</li>
+					<li>CTRL+UP, CTRL+DOWN: Move to previous/next photo even though the listbox is not selected</li>
+					<li>CTRL+SHIFT+UP, CTRL+SHIFT+DOWN: Move a photo higher or lower in the list</li>
+					<li>CTRL+T: Give focus to the Title textbox</li>
+					<li>CTRL+D: Give focus to the Description textbox</li>
+					<li>CTRL+LEFT, CTRL+RIGHT: Rotate the currently selected photo</li>
+					<li>DEL: Remove or delete the currently selected photo. There is a confirmation dialog that asks if you want to remove the photo from the album, or delete the photo. Do not choose "delete" unless you really want to delete the photo from your hard disk forever!</li>
+				</ul>
+
+				<p>You can <a href="ZenPhotoUploader.zip">download the source here</a>, it is licensed under the <a href="http://www.gnu.org/licenses/gpl-3.0.html">GPL v3.0</a>. It is written in C# and requires .NET 3.5 to compile. There is a build.bat file in the root folder that can be used to build the program.</p>
+
+				<p>Finally, you can <strong><a href="ZenPhotoUploader.exe">DOWNLOAD ZenPhotoUploader</a></strong> here, it is a single executable, no dependencies other than the .NET framework 2.0 or higher. The only version of ZenPhoto I've tested it against is v1.2.2, others may not work. Enjoy, and let me know if you have any problems with it.</p>
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

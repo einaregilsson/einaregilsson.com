@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Recycle Bin</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Abandoned Projects</h2>
+				<small>
+					Posted: <time>2008-11-10</time>
+					Last updated: <time datetime="2012-04-19">2012-04-19</time>
+				</small>
+
+				<p>Here are some old projects that have been abandoned or discontinued for some reason. Some of them became obsolete, others are half-finished and I just lost interest in them. Feel free to download them and use the source code in any way you see fit, but I don't offer any support for these projects anymore. If anyone wants to take them over that's more than welcome!</p>
+				
+				<h3><img src="wlive-small.png" alt="Windows Live Logo" />Windows Live Bot</h3>
+				
+				<p>A bot program to talk to people on Windows Live Messenger. Written in C#. There is a tag, 0.1, which is a working version but speaks only icelandic. The trunk folder contains the latest version of the code, where I was experimenting with turning it into a windows service and allowing for many different bots using the same bot interface. <a href="windows-live-bot.zip">Download source code</a>.</p>
+				
+				<h3>Syntax Highlight</h3>
+				<p>A class library written in C# for syntax highlighting code. The formatting is decoupled from the parsing bit so it can output in html, rtf or other formats (although the rtf formatter was never quite finished). Also contains a small asp.net application for syntax highlighting SVN repositories on the web and the beginnings of a syntax highlighting rich text box. <a href="syntaxhighlight.zip">Download source code</a>.</p>
+
+				<h3><img src="firefox-small.jpg" alt="Firefox Logo" />Highlander</h3>
+
+				<p>Firefox extension that checks every url that is opened, and if it is already open in another tab or window then it switches to that tab instead of opening the page again. Includes whitelisting of urls that may be opened more than once. The name is a reference to the phrase "there can be only one" from the movie Highlander. This was made by request, I never used it myself and didn't want to keep updating it to work on newer Firefox versions. <a href="highlander.zip">Download source code and extension</a>.</p>
+
+				<h3><img src="firefox-small.jpg" alt="Firefox Logo" />MultiSearch</h3>
+
+				<p>Firefox extension that allows you to search for multiple items in the google search bar at the same time. E.g. "foo,bar,baz" will open three tabs with the results for foo, bar and baz. This was made by request, I never used it myself. Firefox keeps breaking it by changing the searchbar in new versions so I'm not interested in updating it anymore. <a href="multisearch.zip">Download source code and extension</a>.</p>
+
+				<h3><img src="thunderbird-small.jpg" alt="Thunderbird Logo" />Remote Image Cache</h3>
+
+				<p>Thunderbird extension to save remote images in html emails locally, so you can view the email correctly even when offline or if the origin server takes down the image. Discontinued because Thunderbird 2.0 caches images itself so this extension is no longer needed. <a href="remote-image-cache.zip">Download source code and extension</a>.</p>
+
+				<h3><img src="thunderbird-small.jpg" alt="Thunderbird Logo" />Search For Sender</h3>
+
+				<p>Thunderbird extension that adds two items to the threadpane context menu, ‘Search for this sender’ and ‘Search for this subject’. This basically takes the sender or subject of the selected message, copies it to the QuickSearch window and starts the search. Useful for filtering out all messages in a thread, or all messages from a sender. I stopped updating this extension because I don't use Thunderbird myself anymore. <a href="search-for-sender.zip">Download source code and extension</a>.</p>
+
+
+				<h3><img src="thunderbird-small.jpg" alt="Thunderbird Logo" />Sticky Search</h3>
+
+				<p>Thunderbird extension that makes the quick search “sticky”, i.e. repeats the last quicksearch when you switch to another folder. This turns the quick search box into more of a filter than a search, it will keep searching every folder you switch to until you close the search. When switching folders the text in the searchbox is selected so it’s easy to erase it to quit filtering on the search phrase. I stopped updating this extension because I don't use Thunderbird myself anymore. <a href="sticky-search.zip">Download source code and extension</a>.</p>
+
+				<h3><img src="firefox-small.jpg" alt="Firefox Logo" />XUL Reference</h3>
+
+				<p>Firefox extension to highlight any xpcom component, xul/xbl element or event and open its corresponding page on xulplanet.com. Discontinued since xulplanet is no longer updated and its contents are becoming obsolete. <a href="xul-reference.zip">Download source code and extension</a>.</p>
+
+				<h3><img src="firefox-small.jpg" alt="Firefox Logo" />Sneak Peek</h3>
+
+				<p>Firefox extension that allows you to preview information from link targets by hovering over hyperlinks on a webpage. Unlike other preview extensions (Cooliris etc.) the Sneak Peek extension does not show preview on all links, and it does not show a preview of the entire link target page. Instead the extension uses little snippets of code, so-called Sneak Peek Scripts, that define for which pages you want to see a preview, and precisely which part of the link target you want to preview in a floating div. <a href="sneak-peek.zip">Download source code and extension</a>.</p>
+
+				<h3>Greasemonkey scripts</h3>
+
+				<p>I had four published Greasemonkey scripts, one to preview links to xkcd.com, one to preview message board posts on the Joel on Software forums, one that added a number of features to boligportal.dk and one that added features to DTU's Campusnet website. They are now all out of date or I'm not using those websites anymore and so am not interested in maintaining them as the sites change. But they are all available here, mostly for myself if I need to remember how I did something :). <a href="greasemonkey.zip">Download all scripts</a>.</p>
+				
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

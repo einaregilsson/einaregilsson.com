@@ -1,0 +1,141 @@
+body {
+	font-family: Arial, sans-serif;
+	background-color:white;
+	padding:0px;
+	margin:0px;
+	color:#222;
+}
+html { padding:0px; margin:0px;}
+
+a { text-decoration:none; color:#47a;}
+article a:hover { text-decoration:underline; color:#47a;}
+
+#content {
+	width:650px;
+	margin:auto;
+	padding:10px;
+	border-radius:4px;
+}
+
+small {
+	color:#777;
+	margin:0px;
+}
+h1 { 
+	font-family:'Courier new', monospace;
+	text-align:center;
+	margin:0px; 
+	font-size:75px; 
+	padding-top:30px;
+	text-shadow:white 2px 2px 1px;
+	-webkit-transform:rotate(3deg);
+	-o-transform:rotate(3deg);
+	-ms-transform:rotate(3deg);
+	-moz-transform:rotate(3deg);
+}
+
+h3 img { 
+	display:inline-block;
+	margin:0px 5px 0px 0px;
+	padding:0px;
+}
+h2 {
+	margin-bottom:0px;
+}
+
+span.inline-code {
+	font-family:courier-new, monospace;
+}
+
+h3 {
+	padding-left:20px;
+}
+
+pre.textfile {
+	font-family:courier, monospace; 
+	border:solid 1px black; 
+	padding:5px;
+	background-color:white;
+	color:black;
+}
+
+header {
+	height:150px;
+	width:100%;
+	background:#eee;
+	margin:0px;
+	border-bottom: solid 1px #ccc;
+					background-image:-o-linear-gradient(top,#f6f6f6,#ececec);
+					background-image:-webkit-linear-gradient(top,#f6f6f6,#ececec);
+					background-image:-moz-linear-gradient(top,#f6f6f6,#ececec);
+					background-image:linear-gradient(top,#f6f6f6,#ececec);
+					filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#f6f6f6', endColorstr='#ececec');			
+								
+}
+
+.update {
+	padding:6px;
+	background-color: #eee;
+	border:solid 1px #777;
+	border-radius:4px;
+	-webkit-border-radius:4px;
+	-o-border-radius:4px;
+	-moz-border-radius:4px;
+	box-shadow:1px 1px 1px #444;
+	
+}
+
+article {
+	font-size:15px;
+	line-height:18px;
+}
+
+img {
+	padding:7px;
+	margin:auto;
+	display:block;
+}
+
+.left { float:left;}
+.right { float:right;}
+
+div.linkbrick {
+	float:left;
+	padding:5px;
+	border:solid 1px black;
+}
+
+div.linkbrick ul {
+	list-style-type:none;
+	margin:0px;
+	padding:0px;
+}
+p.console {
+	background-color:black;
+	color:white;
+	font-family: 'Courier New', monospace;
+	font-weight:bold;
+	text-shadow:none;
+	padding:4px;
+	font-size:13px;
+	white-space:pre;
+}
+
+code {
+	white-space:pre;
+}
+
+.syntaxhighlighter { overflow-y: hidden !important; }
+
+blockquote { 
+	font-style:italic;
+	border:solid 1px black;
+	border-radius:5px;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	-ms-border-radius:5px;
+	-o-border-radius:5px;
+	padding:5px 7px;
+	background-color:#fafafa;
+	box-shadow:1px 1px 1px #444;
+}

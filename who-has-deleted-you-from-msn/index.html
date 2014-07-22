@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Who has deleted you from MSN?</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Who has deleted you from MSN?</h2>
+				<small>
+					Posted: <time>2007-08-09</time> 
+					Last updated: <time datetime="2012-04-18">2012-04-18</time>
+				</small>
+				
+				<p class="update"><strong>UPDATED 01.05.2012:</strong> I have no idea whether this works with the latest version of Windows Live Messenger.</p>
+				
+				<p class="update"><strong>Updated 05.09.2007:</strong> Minor changes to work with the new MSN protocol.</p>
+
+				<p>My wife showed me a website the other day where you could type in your email address and password for <del>MSN</del> Windows Live! Messenger, and it would show you which of your contacts didn't have you in their contact lists, either because they'd never added you, or because they'd deleted you at some point. It's a cool idea and a good way to prune some of the contacts that you never speak to from your contact list. But I don't really wanna give up my user / pass to some third-party site, even though they promise not to log it anywhere, and most of these sites (at least the ones I saw) tried to make some money by sending advertisements to your contacts while they were checking them, which I definitely didn't want. So, since I already have a <a href="../recycle-bin/" title="Windows Live Bot">project that uses the MSN protocol</a> I figured I could probably whip something up myself.</p>
+
+				<p>(For those that have no interest in the programming and just want to have the program, you can <a href="MsnContactChecker.exe">download it here</a>, those interested in the implementation can keep reading). To connect to MSN I use the excellent <a href="http://code.google.com/p/msnp-sharp/">MSNPSharp</a> library. That takes care of all the hard stuff so all I have to do is connect, loop through the contacts and print out those that are in your contact list but don't have you in theirs. Now, I wrote this program in about 20 minutes, so it's not the most beautiful code in the world, and the error-handling is almost non-existant, but it works (for me at least :) ), I found 4 contacts that didn't have me in their list and promptly deleted them. Here it is:</p>
+
+				<code data-language="csharp">
+using System;
+using System.Threading;
+using MSNPSharp;
+
+// Author: Einar Egilsson
+// http://einaregilsson.com/who-has-deleted-you-from-msn/
+class MsnContactChecker
+{
+    readonly Messenger msn = new Messenger();
+    const string Url =
+        "http://einaregilsson.com/who-has-deleted-you-from-msn/";
+
+    static void Main()
+    {
+        new MsnContactChecker().Check();
+    }
+
+    public void Check()
+    {
+        Console.WriteLine("\nMsnContactChecker v1.0\n{0}", Url);
+        try
+        {
+            Console.Write("\nUsername: ");
+            msn.Credentials.Account = Console.ReadLine().Trim();
+            Console.Write("Password: ");
+            msn.Credentials.Password = Console.ReadLine().Trim();
+
+            msn.NameserverProcessor.ConnectingException += Error;
+            msn.Nameserver.ExceptionOccurred += Error;
+            msn.Nameserver.AuthenticationError += Error;
+            msn.Nameserver.ServerErrorReceived += MsnError;
+            msn.ContactService.SynchronizationCompleted += Synchronized;
+
+
+            Console.WriteLine("\nConnecting to MSN...(this might take a little while)");
+            msn.Connect();
+            Thread.Sleep(Timeout.Infinite);
+        }
+        catch (Exception ex)
+        {
+            Error(this, new ExceptionEventArgs(ex));
+        }
+    }
+
+    void Synchronized(object sender, EventArgs e)
+    {
+        Console.WriteLine("\nContacts that have deleted you:");
+        int count = 0;
+        foreach (Contact c in msn.ContactList.Forward)
+        {
+            if (!c.OnReverseList)
+            {
+                count++;
+                if (c.Mail == c.Name)
+                {
+                    Console.WriteLine(" {0}", c.Name);
+                }
+                else
+                {
+                    Console.WriteLine(" {0} ({1})", c.Name, c.Mail);
+                }
+            }
+        }
+        if (count == 0)
+        {
+            Console.WriteLine(" None of your contacts have deleted you");
+        }
+        Exit(0);
+    }
+
+    private void MsnError(object sender, MSNErrorEventArgs e)
+    {
+        Console.WriteLine("\nError: {0}", e.MSNError);
+        Exit(1);
+    }
+
+    void Error(object sender, ExceptionEventArgs e)
+    {
+        Console.WriteLine("\nError: {0}", e.Exception.Message);
+        Exit(1);
+    }
+
+    private void Exit(int code)
+    {
+        Console.WriteLine("\nPress any key to quit program");
+        Console.Read();
+        Environment.Exit(code);
+    }
+}
+				</code>
+
+				<p>You can <a href="MsnContactChecker.zip">download the source</a> and play with it. The zip file includes the MsnContactChecker.cs file and the library, MSNPSharp.dll.</p>
+
+				<p>Or to just get the compiled program you can <a href="MsnContactChecker.exe">download it here</a>. It's just a single executable file, since I used the excellent <a href="http://research.microsoft.com/en-us/people/mbarnett/ilmerge.aspx">ILMerge tool</a> from Microsoft to merge my .exe file and the DotMSN library into one file. Enjoy :)</p>
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="/js/jquery-1.7.min.js"></script>
+		<script src="/js/site.js"></script>
+	</body>
+</html>

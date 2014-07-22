@@ -1,0 +1,191 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+		<meta http-equiv="Content-language" content="en" />
+		<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+		<meta name="description" content="JavaScript REPL, a Read-Execute-Print-Loop" />
+		<title>JavaScript REPL</title>
+		<style type="text/css">
+			html, body {
+				overflow-x:hidden;
+			}
+			.console { 
+				background-color:black; 
+				color:#00ff00; 
+				font-family:"Courier New",monospace;
+				font-size:15px;
+				margin:0;
+				padding:0 2px;
+				border-style:none;
+			}
+			body {
+				padding:0;
+				margin:0;
+				width:600px;
+			}
+			#repl_history, #repl_prompt {
+				width:600px;
+			}
+			#repl_input {
+				width:562px;
+				border-style:none;
+				margin:0;
+				margin-left:-1px;
+				padding:0;
+				margin-top:-2px;
+			}
+		</style>
+		<!--[if IE]>
+		<style type="text/css">#repl_input {margin-left:0px;}</style>
+		<![endif]-->
+	</head>
+	<body onload="load(event);">
+		<pre id="repl_history" class="console">
+C:\>cscript //NoLogo jsrepl.js
+>>> 1+2;
+3
+>>> var x;
+>>> x = 'foobar';
+'foobar'
+>>> x + 'baz';
+'foobarbaz'
+>>> if (x == 'foobar') {
+...     print('Was equal');
+... };;
+Was equal
+>>> function printstuff() {
+...     print('Line one');
+...     print('Line two');
+... }
+... ;
+>>> printstuff();
+Line one
+Line two
+undefined</pre>
+		<pre class="console" id="repl_prompt"><span id="prompt_text">&gt;&gt;&gt; </span><input type="text" onkeydown="repl(event);" maxlength="62" id="repl_input" class="console" />
+		</pre>
+		<script type="text/javascript">
+			//<![CDATA[
+
+			var printbuffer = '';
+			window._$ = '';		
+			var x = 'foobar';
+			var commands = [
+				'1+2',
+				'var x;', 
+				"x = 'foobar';", 
+				"x + 'baz';", 
+				"if (x == 'foobar') {", 
+				"    print('Was equal');", 
+				"};;", 
+				"function printstuff() {", 
+				"    print('Line one');", 
+				"    print('Line two');", 
+				"}", 
+				";", 
+				"printstuff();"];
+			var cmdIndex = commands.length;
+
+			function print(s) { 
+				printbuffer += s + '\n';
+			}
+			
+			function printstuff() {
+				print('Line one');
+				print('Line two');
+			}
+
+			function load(event) {
+				window.repl_input = document.getElementById('repl_input');
+				window.repl_history = document.getElementById('repl_history');
+				window.repl_prompt = document.getElementById('repl_prompt');
+				window.prompt_text = document.getElementById('prompt_text');
+				repl_input.focus();
+			}
+			
+			function repl(event) {
+				if (event.keyCode == 13) {
+					var text = repl_input.value;
+					if (text.replace(/^\s*|\s*$/g, '') == 'exit') {
+						repl_prompt.parentNode.removeChild(repl_prompt);
+						repl_history.parentNode.removeChild(repl_history);
+					}
+					if (text != commands[commands.length-1]) {
+						commands.push(text);
+					}
+					
+					if (text != commands[cmdIndex] || cmdIndex == commands.length-1) {
+						cmdIndex = commands.length;
+					}
+					var newprompt;
+					window._$ += (window._$ ? '\n':'') + text.replace(/^\s*|\s*$/g, '');
+					if (window._$.match(/^[^\n]*;$|;;$|\n;$/)) {
+						try {
+							if (window._$.match(/\n/) || _$.match(/^(if|while|var|try|do|with|function|switch|for|print)\b/)) {
+								eval.call(null, window._$);
+							} else {
+								window._$ = eval.call(null, window._$);
+								if (typeof(window._$) == 'undefined') {
+									print('undefined');
+								} else if (typeof(window._$) == 'boolean') {
+									print(window._$ ? 'true' : 'false');
+								} else if (typeof(window._$) == 'string') {
+									print("'" + window._$ + "'");
+								} else {
+									print(window._$);
+								}
+							}
+						} catch(e) {
+							print('ERROR: ' + e.message);
+						}
+						window._$ = '';
+						newprompt = '&gt;&gt;&gt; ';
+					} else {
+						newprompt = '... ';
+					}
+					var new_history = repl_history.innerHTML.replace(/<BR>/g, '\n').replace(/&nbsp;/g, ' ');
+					new_history += '\n' + prompt_text.innerHTML + text.replace(/&/g, '&amp;');
+					//repl_history.innerHTML += '\n' + prompt_text.innerHTML + text;
+					if (printbuffer) {
+						new_history += '\n' + printbuffer.replace(/\n$/, '');
+						printbuffer = '';
+					}
+					//repl_history.removeChild(repl_history.firstChild);
+					//repl_history.appendChild(document.createTextNode(new_history.replace(/&gt;/g, '>')));
+					if (repl_history.innerText) {
+						repl_history.innerText = new_history.replace(/&gt;/g, '>');
+					} else {
+						repl_history.innerHTML = new_history.replace(/&gt;/g, '>');
+					}
+
+					prompt_text.innerHTML = newprompt;
+					repl_input.value = '';
+					repl_input.focus();
+				} else if (event.keyCode == 38) {
+					if (cmdIndex > 0) {
+						cmdIndex--;
+					}
+					repl_input.value = commands[cmdIndex];
+				} else if (event.keyCode == 40) {
+					if (cmdIndex < commands.length-1) {
+						cmdIndex++;
+					}
+					repl_input.value = commands[cmdIndex] || '';
+				} else if (event.keyCode == 9) {
+					event.preventDefault();
+					
+					if (repl_input.value.length <= 58) {
+						var pos = repl_input.selectionStart;
+						var first = repl_input.value.substr(0, pos);
+						var second = repl_input.value.substr(pos);
+						repl_input.value = first + '    '  + second;
+						repl_input.selectionStart= pos+4;
+						repl_input.selectionEnd= pos+4;
+					}
+				}
+			}
+			//]]>
+		</script>
+	</body>
+</html>

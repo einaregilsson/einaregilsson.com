@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Write to a file in the Google App Engine Development server</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Write to a file in the Google App Engine Development server</h2>
+				<small>
+					Posted: <time>2010-12-16</time> 
+					Last updated: <time datetime="2012-04-17">2012-04-17</time>
+				</small>
+			
+				<p>The App Engine development server tries to mimic the real environment by making it forbidden to write to the filesystem. However, for certain things you might want to do that anyway, for example to log to a file. In that case you can use this code snippet to enable writing to the filesystem:</p>
+
+				<code data-language="python">
+if os.environ.get('SERVER_SOFTWARE','').startswith('Dev'):
+    from google.appengine.tools.dev_appserver import FakeFile
+    FakeFile.ALLOWED_MODES = frozenset(['a','r', 'w', 'rb', 'U', 'rU'])
+				</code>
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

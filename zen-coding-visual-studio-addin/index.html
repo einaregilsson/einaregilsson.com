@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>ZenCoding Visual Studio AddIn</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>ZenCoding Visual Studio AddIn</h2>
+				<small>
+					Posted: <time>2009-11-12</time> 
+					Last updated: <time datetime="2012-04-18">2012-05-02</time>
+				</small>
+			
+				<p class="update"><strong>UPDATE 2012-05-02:</strong> There have been at least two new implementations of ZenCoding created and added to the VS gallery. You should probably go there instead and download one of them instead. See <a href="http://visualstudiogallery.msdn.microsoft.com/924090a6-1177-4e81-96a3-e929d7193130">Version 1</a>, <a href="http://visualstudiogallery.msdn.microsoft.com/abd79254-b4f7-492d-95ae-d9fa38e0af48">Version 2</a>.</p>
+				
+				<p class="update"><strong>UPDATE 2010-02-04:</strong> I'm no longer working on this addin and cannot provide support for failed installations.</p>
+
+				<p>The original blog post about the architecture of the addin is now completely out of date as 90% of the addin is now written in IronPython with just a tiny shim layer of C# to instantiate the IronPython classes. I'll probably write a blog post about that architecture seperately (or generally about how to write addins for VS in IronPython). Those interested in the architecture can download the source and look at it.</p>
+
+				<p>A nice tutorial with screenshots on how to setup the keyboard mappings and use the addin has just been posted at <a href="http://www.netsi.dk/wordpress/index.php/2009/12/02/zen-coding-a-very-fast-way-of-generating-html-elements-in-your-editor/">http://www.netsi.dk/wordpress/index.php/2009/12/02/zen-coding-a-very-fast-way-of-generating-html-elements-in-your-editor/</a> so go there for your setup instructions.</p>
+
+				<h4>ZenCoding.VisualStudio v1.1.0.333</h4>
+
+				<p><a title="MSI installer for the add-in" href="ZenCoding.VisualStudio.msi">DOWNLOAD ADD-IN</a> || <a title="Download zip file with source code" href="ZenCoding.VisualStudio.zip">DOWNLOAD SOURCE</a></p>
+
+				<h4>RELEASE NOTES:</h4>
+
+				<h4>Version 1.1.0.333, 02.12.2009:</h4>
+
+				<p>This release adds the following features</p>
+				<ul>
+					<li>Uses latest version of zencoding python library</li>
+					<li>Wrap with abbreviation command</li>
+					<li>Use, create, edit, delete custom snippets (Tools-&gt;Options-&gt;ZenCoding)</li>
+					<li>Icons for commands</li>
+					<li>Some bug fixes</li>
+				</ul>
+
+				<p>Also a total rewrite with everything now written in IronPython</p>
+
+				<h4>Version 1.0, 12.11.2009:</h4>
+
+				<p>Initial release, features:</p>
+				<ul>
+					<li>Expand abbreviation</li>
+				</ul>
+
+				<h4>Original blog post follows:</h4>
+
+				<p>Earlier this week, while reading <a href="http://secretgeek.net">Leon Bambrick's blog</a> I learned about a set of plugins, named "zen-coding", which expand snippets of css-selector like code into full blown html and/or css elements. <a href="http://secretgeek.net/zen_coding.asp">Leon's article</a> explains it better and there is also some documentation on the <a href="http://code.google.com/p/zen-coding/">official zen-coding page</a>. Anyway, this plugin is available for a number of text editors and IDE's but not for Visual Studio. I use Visual Studio a lot and wanted zen-coding in there, so I decided to try and whip up a small add-in for it.</p>
+
+				<p>The original library is available both as JavaScript and Python. I really didn't want to port or alter anything in the original code, since for future versions I want to be able to just drop in a couple of files from the original library and rebuild the add-in. The obvious choice then was to see if the library would work with IronPython. Fortunately the zen-coding library is just basic string manipulation and worked perfectly with IronPython right out of the box.</p>
+
+				<p>The next challenge was figuring out how to call into that from the add-in, which I wanted to write in C#. The library contained two functions I needed to be able to call. That turned out to be surprisingly easy. <del>I made a wrapper class, ZenCodingEngine, which has two delegates with the correct method signatures, and then in its constructor I ran some custom python import code, and got references to the functions I needed and assigned them to my delegates.</del> I changed that approach in the latest version and moved almost all of the logic into Python instead. Now the C# AddIn is very thin, it basically just receives events from VS and invokes a single exec_command() method that is defined in a python script. The interesting parts of that code are below:</p>
+
+				<code data-language="csharp">
+private void ReloadPython()
+{
+  ScriptEngine engine = Python.CreateEngine();
+  ScriptScope scope = engine.CreateScope();
+  string folder = Path.GetDirectoryName(new
+    Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
+  List searchPaths = new List&lt;string>(engine.GetSearchPaths());
+  searchPaths.Add(folder);
+  engine.SetSearchPaths(searchPaths);
+  scope = engine.ExecuteFile(Path.Combine(folder, "vs_zen_coding.py"));
+  engine.SetVariable(scope, "App", _applicationObject);
+  execCommand = engine.GetVariable&lt;Func&lt;bool>>(scope, "exec_command");
+}
+
+public void Exec(string commandName, vsCommandExecOption executeOption, 
+                 ref object varIn, ref object varOut, ref bool handled)
+{
+  handled = false;
+  if (!CanExecuteCommand(commandName, executeOption))
+  {
+    return;
+  }
+
+  try
+  {
+    #if RELOAD_EVERY_TIME
+    ReloadPython();
+    #else
+    if (execCommand == null)
+    {
+      //Load first time, to avoid making the VS startup slower
+      ReloadPython();
+    }
+    #endif
+
+    execCommand();
+  }
+  catch (Exception ex)
+  {
+    DisplayError(ex);
+  }
+  handled = true;
+}</code>
+
+				<p>The ReloadPython() method is not called on startup, instead it is called the first time the command is called. IronPython performs well, but there is still some startup cost and I don't want to add that to the startup time of Visual Studio. Instead you pay the price the first time you actually need it. Then we have the Exec method which is from a VS interface and is called when the command is invoked. There I use a compilation constant, RELOAD_EVERY_TIME, to check if I should reload my python script every time I invoke the command. This has proved to be INCREDIBLY useful, instead of constantly starting VS up again and again I just edit my python script, save it and the next time I execute the command the new code is used. And of course I turn this constant off for release builds.</p>
+
+				<p>Another nice trick to play around with the VS API, start up an IronPython shell and type:</p>
+				<p class="console">&gt;&gt;&gt; from System.Runtime.InteropServices import Marshal
+&gt;&gt;&gt; app = Marshal.GetActiveObject(&#8220;VisualStudio.DTE.9.0&#8243;)
+&gt;&gt;&gt; app.ActiveDocument.Name
+"ZenCodingAddIn.cs"</p>
+
+				<p>This gets you a reference to the running instance of VS2009 which you can then experiment with.</p>
+
+				<p>You can download <a href="ZenCoding.VisualStudio.msi">an installer</a> for the add-in or get <a href="ZenCoding.VisualStudio.zip">the source</a>. The add-in is licensed under the GPL v3, the same license the zen-coding library uses. The add-in works for Visual Studio 2005, 2008 and 2010 beta 2.</p>
+
+				<p>Now, once you've installed the add-in, nothing happens. Well, actually what happens is there's a new command available in Visual Studio, named <strong>ZenCoding.Expand</strong>, or <strong>ZenCoding.VisualStudio.ZenCodingAddIn.Expand</strong>, depending on where you are looking for it. (The keyboard mapping uses the full command id, but when adding it to a toolbar you get a shorter friendly name for it). By default it is not mapped to any keyboard combination. This is because <del>it's late and I can't be bothered to figure it out</del> I strongly believe that add-ins should not force a keyboard shortcut on you, possibly overriding something you have set yourself. So, map the command to your preferred keyboard shortcut (mine is Ctrl+E,Ctrl+K). Or you can drag the command  onto a toolbar, which is fairly useless, but possible.</p>
+
+				<p>Enjoy!</p>
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

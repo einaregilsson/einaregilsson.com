@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Export Haloscan comments</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Export Haloscan comments</h2>
+				<small>
+					Posted: <time>2007-08-13</time> 
+					Last updated: <time datetime="2012-04-18">2012-04-18</time>
+				</small>
+			
+				<p class="update"><strong>UPDATE 2012-04-23:</strong> Haloscan went out of business years ago. I just keep this entry around for historical reasons.</p>
+				
+				<p>A few weeks ago I was helping my sister change her blog. She has a Blogger account but uses Haloscan for comments, since when she started blogging Blogger didn't offer comments as a part of their service. That has changed now, so I thought it would be much more convenient to have the comments and blog all at the same place. I just needed a way to export her Haloscan comments and import them into Blogger. So I wrote a small Python script to do the exporting for me.</p>
+
+				<p>The script logs into your Haloscan account, makes a http request for each comment and writes them to an .xml file. If the script fails halfway through you can just start it again and it will continue where it left off. A xml file with the name yourusername.xml will be created in your working folder where you start the script. It contains all information about every comment, date, author, url, email, ip, threadid, commentid and text. You can then parse the xml file to import them into other comment systems. Before you download the script, be sure to read the following disclaimer:</p>
+
+				<p><strong>DISCLAIMER: This is provided "AS-IS", I make no guarantees that this works, it's based on screen scraping so could stop working whenever Haloscan change their pages.</strong></p> 
+   
+				<p><strong>According to the Haloscan Terms of Service (http://www.haloscan.com/privacy/) it's not explicitly forbidden to screen scrape their site. HOWEVER, they say:</strong></p>
+   
+				<p><strong>"We reserve the right to suspend, delete, or cancel any account/service at any time for any reason."</strong></p>
+   
+				<p><strong>This script makes a new http request for every single comment so if you have thousands of comments and Haloscan doesn't approve of you pounding their server and suspends your account and you lose all your comments, I CANNOT BE HELD RESPONSIBLE. USE AT YOUR OWN RISK! You've been warned!</strong></p>
+
+				<p>Now that you've read that, you can <a href="haloscan.py">download the script here</a>.</p>
+				
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

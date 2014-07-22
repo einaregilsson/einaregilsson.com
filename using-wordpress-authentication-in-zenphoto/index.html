@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Using Wordpress authentication in Zenphoto</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Using WordPress authentication in Zenphoto</h2>
+				<small>
+					Posted: <time>2007-08-08</time> 
+					Last updated: <time datetime="2012-04-18">2012-04-18</time>
+				</small>
+			
+				<p class="update"><strong>UPDATE 01.05.2012:</strong> I have no idea whether this works in newer versions of WordPress and ZenPhoto. I use neither of them myself anymore, so I can't help with questions about why this isn't working on your setup.</p>
+				
+				<p>In a previous post I talked about <a href="../integrating-zenphoto-into-wordpress/">how to integrate ZenPhoto into WordPress</a>. After I had done that for my own site I still wasn't happy. I didn't like the fact that I had to use seperate logins for WordPress and ZenPhoto, I wanted this to be as integrated as possible. So I figured out a way to make ZenPhoto ask WordPress for authentication credentials. In other words, if you're logged into WordPress, you're also logged into ZenPhoto. This makes the user/password in the ZenPhoto config file meaningless. Here's what you have to do to get this working:</p>
+
+				<p>Edit the file auth_zp.php under the zen folder in your ZenPhoto installation, throw away everything in the file, and replace it with this:</p>
+				
+				<code data-language="php">
+&lt;?php
+require_once("functions-db.php");
+
+$wp_include = "../wp-config.php";
+$i = 0;
+while (!file_exists($wp_include) &amp;&amp; $i++ &lt; 10) {
+  $wp_include = "../$wp_include";
+}
+require_once($wp_include);
+
+function zp_loggedin() {
+  //Only considered logged in if it's someone with more rights
+  //than a Subscriber
+  return is_user_logged_in() &#038;&#038; wp_get_current_user()->user_level >= 2; 
+}
+
+if (isset($_GET["logout"]) || isset($_POST["logout"])) {
+  header("Location: " . get_option("siteurl") 
+       . "/wp-login.php?action=logout");
+  exit();
+}
+
+?>;
+				</code>
+
+				<p>This technique assumes that your Zenphoto folder is a subfolder of your WordPress folder. Like here, my WordPress install is at http://einaregilsson.com/ and my Zenphoto install is at http://einaregilsson.com/photos/. It can be at most 10 levels deep in the folder hierarchy under WordPress, but it MUST be under the WP folder.</p>
+
+				<p>Edit the admin-function.php file thats also under the zen folder in your ZenPhoto installation. Find the function printLoginForm and replace it with this:</p>
+
+				<code data-language="php">
+function printLoginForm($redirect="/zen/admin.php") {
+  if (is_user_logged_in() &amp;&amp; wp_get_current_user()->user_level == 0) {
+    //User is logged in as Subscriber
+  
+    $logoutUrl = get_option('siteurl') . "/wp-login.php?action=logout";
+    echo "&lt;p>&lt;img src=\"../zen/images/zen-logo.gif\" title=\"Zen Photo\" />&lt;/p>";
+  
+    echo "\\n  &lt;div id=\"loginform\">";
+    echo "&lt;div class=\"errorbox\" id=\"message\">"
+       . "&lt;h2>Error: Insufficient privileges.&lt;/h2>"
+       . "You are currently logged into WordPress as a &lt;strong>Subscriber&lt;/strong>. "
+       . "Subscribers can't access ZenPhoto Administration. In order to do "
+       . "so you must &lt;a href=\"$logoutUrl\">log out of WordPress&lt;/a> and "
+       . "then log in again with an account that has more rights."
+       . "&lt;/div>";
+    echo "\\n&lt;/body>";
+    echo "\\n&lt;/html>";
+  } else {
+    $redirect = WEBPATH . $redirect;
+    header("Location: ".get_option('siteurl')."/wp-login.php?redirect_to=$redirect");
+    exit();
+  }
+}
+				</code>
+
+				<p>The only tricky thing here was dealing with WordPress users that only have Subscriber rights. Subscribers shouldn't be able to administer ZenPhoto of course, but I didn't want to log them out automatically or anything. So I added a special case for them, if a Subscriber tries to access ZenPhoto Administration he will get an error message saying he needs to log in with higher privileges and link to log out of WordPress. If you already have the basic <a href="../integrating-zenphoto-into-wordpress/">ZenPhoto integration</a> working then you'll have the ZenPhoto link in your WordPress admin pages. Subscribers however won't see this link, it will only be shown to users with a role of Contributor or higher.</p>
+
+				<p>And that's it. Now I have my photos using my WordPress theme, I can edit them in my WordPress admin, I have a link to the ZenPhoto admin and I can use WordPress authentication. The integration is complete :)</p>
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

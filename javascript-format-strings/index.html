@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Javascript format strings</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Javascript format strings</h2>
+				<small>
+					Posted: <time>2007-07-31</time> 
+					Last updated: <time datetime="2012-04-18">2012-04-18</time>
+				</small>
+				<script type="text/javascript" src="javascript-format-strings.js"></script>
+
+				<p>Python has been my favorite language for a while but since I started making Mozilla Extensions I've started to like Javascript a lot too. One thing I miss from Python though are the format strings. In Python you can always create a string like this:</p>
+
+				<code data-language="python">
+s = '%s is a %s' % ('John', 'Moron')
+				</code>
+
+				<p>Since Javascript is a very flexible language and allows you to alter its built in types I decided to try to create something similar for it. Here's what I came up with:</p>
+
+				<code data-language="js">
+String.prototype.$ = function() {
+
+  s = this;
+  if (arguments.length == 1 &amp;&amp; arguments[0].constructor == Object) {
+	for (var key in arguments[0]) {
+	  s = s.replace(new RegExp("\$" + key, "g"), arguments[0][key]);
+	}
+  } else {
+	for (var i = 0; i &lt; arguments.length; i++) {
+	  s = s.replace(new RegExp("\$" + (i+1), "g"), arguments[i]);
+	}
+  }
+  return s;
+};
+				</code>
+
+				<p>The function works in two ways.</p>
+
+				<ol>
+					<li>
+						You can send in 1-n parameters and then $1 &#8211; $n in the string will be replaced by the parameters values. Example
+						<code data-language="js">
+var undef; //Undefined value
+var s = 'My name is $1 and I am $2 years old. This is a null variable: $3, this one is undefined: $4' .$ ('Einar', 27, null, undef);
+alert(s);
+						</code>
+						<button style="width:40px; margin-right:30px;" onclick="test_numbers();">  Test  </button>
+					</li>
+					<li>
+						You can send in 1 parameter that's a javascript object and then $keyname in the string will be replaced by the value for "keyname" in the javascript object.  Example
+						<code data-language="js">
+var d; //Undefined value
+var dict = { name : 'Einar', age : 27, nullvar : null, undef : d };
+var s = 'My name is $name and I am $age years old. This is a null variable: $nullvar, this one is undefined: $undef' .$ (dict);
+alert(s);
+						</code>
+						<button style="width:40px; margin-right:30px;" onclick="test_dict();">  Test  </button>
+					</li>
+				</ol>
+
+				<p>This works fine in Mozilla Firefox and Internet Explorer 7, I haven't tested it in other browsers. I know the $ is used for document.getElementById in prototype and maybe other js libraries but I thought it was the best choice here too, I don't think it's confusing to use it for these two things. In case the syntax highlighting stuff screwed up the code on the page you can also <a href="javascript-format-strings.js">download it here</a>.</p>
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

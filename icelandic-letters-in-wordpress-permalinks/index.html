@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Icelandic letters in Wordpress permalinks</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Icelandic letters in WordPress permalinks</h2>
+				<small>
+					Posted: <time>2007-07-27</time> 
+					Last updated: <time datetime="2012-04-18">2012-04-18</time>
+				</small>
+				
+				<p class="update"><strong>Update 17.04.2012</strong> The fix that this blog post describes got released in WordPress 3.1, so this blog post is now obsolete. I looked at the patch that I had submitted for it today and found out that it was finally fixed in <a href="http://core.trac.wordpress.org/changeset/15930">changeset 15930</a> on Oct 23, 2010, and was released in WordPress 3.1 on February 23, 2011. So, three and a half years after I submitted the patch it got released :)</p>
+
+				<p class="update"><strong>Update 13.08.2007</strong> I made a patch for this and submitted it to WordPress. The changes should come in WP 2.3. The patch is on <a href="http://trac.wordpress.org/ticket/4739">ticket #4739</a>.</p>
+
+				<p>I use <a href="http://wordpress.org">WordPress</a> for this site as well as my personal blog.  It works very well with icelandic letters for the most part but there was one problem. When you create a new post and give it a title, the post slug is generated from the title. For example, the title of this post is "Icelandic letters in WordPress permalinks" and it's automatically changed to "icelandic-letters-in-wordpress-permalinks" in the url. When you have a post with special characters in the title they are either removed or changed to some ASCII equivalent. For instance, Á becomes A, Í becomes I, ö becomes o and so on. This worked well for all icelandic letters except three, they are þ, æ, ð. When I made a post with the title "Þátturinn" the post-slug would become "þatturinn" and when I tried to enter that address in my address bar it changed to "%c3%beatturinn" and I got a "page not found" error from WordPress.</p>
+
+				<p>Now, you can manually enter the post-slug when you write a post, but I don't wanna have to do that every time I post, so I dug around the WordPress code and found the replacement function. It's called remove_accents and is in the file wp-includes/formatting.php. There, right before the line "// Decompositions for Latin Extended-A" I added the following code:</p>
+
+				<code data-language="php">
+chr(195).chr(144) => 'D', chr(195).chr(176) => 'd',
+chr(195).chr(158) => 'TH',chr(195).chr(190) => 'th',
+chr(195).chr(134) => 'AE',chr(195).chr(166) => 'ae',
+				</code>
+
+				<p>Now the characters are replaced automatically like this: Ð =&gt; D, ð =&gt; d, Þ =&gt; TH, þ =&gt; th, Æ =&gt; AE, æ =&gt; ae. I don't know if everyone has this problem, or if it just has to do with the character set settings on my webhost but this works great for me. No more manually fixing page slugs! I'm gonna create a bug report with WordPress and hopefully this will be accepted into the next version.</p>
+
+				<p>Few words in icelandic to help people find this post: Íslenskir stafir í wordpress linkum post slug permalink permalinks</p>
+			
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>

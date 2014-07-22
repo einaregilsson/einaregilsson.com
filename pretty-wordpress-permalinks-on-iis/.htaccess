@@ -1,0 +1,4 @@
+RemoveHandler .php
+php_flag engine off
+
+AddType text/plain php
