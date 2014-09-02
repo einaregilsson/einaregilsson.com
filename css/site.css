@@ -1,5 +1,5 @@
 body {
-	font-family: Arial, sans-serif;
+	font-family: Georgia, Arial, sans-serif;
 	background-color:white;
 	padding:0px;
 	margin:0px;
@@ -11,7 +11,7 @@ a { text-decoration:none; color:#47a;}
 article a:hover { text-decoration:underline; color:#47a;}
 
 #content {
-	width:650px;
+	max-width:650px;
 	margin:auto;
 	padding:10px;
 	border-radius:4px;
@@ -48,7 +48,9 @@ span.inline-code {
 }
 
 h3 {
-	padding-left:20px;
+	padding-left:10px;
+	margin-top:30px;
+	margin-bottom:10px;
 }
 
 pre.textfile {
@@ -86,8 +88,8 @@ header {
 }
 
 article {
-	font-size:15px;
-	line-height:18px;
+	font-size:18px;
+	line-height:25px;
 }
 
 img {
@@ -112,12 +114,14 @@ div.linkbrick ul {
 }
 p.console {
 	background-color:black;
-	color:white;
+	border-radius:2px;
+	color:#0f0;
 	font-family: 'Courier New', monospace;
 	font-weight:bold;
 	text-shadow:none;
-	padding:4px;
-	font-size:13px;
+	padding:6px;
+	font-size:15px;
+	line-height:18px;
 	white-space:pre;
 }
 
@@ -125,7 +129,10 @@ code {
 	white-space:pre;
 }
 
-.syntaxhighlighter { overflow-y: hidden !important; }
+.syntaxhighlighter { 
+	overflow-y: hidden !important; 
+	font-size:13px !important;
+}
 
 blockquote { 
 	font-style:italic;
