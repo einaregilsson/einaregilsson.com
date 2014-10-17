@@ -25,7 +25,7 @@ h1 {
 	font-family:'Courier new', monospace;
 	text-align:center;
 	margin:0px; 
-	font-size:75px; 
+	font-size:4em; 
 	padding-top:30px;
 	text-shadow:white 2px 2px 1px;
 	-webkit-transform:rotate(3deg);
@@ -62,16 +62,16 @@ pre.textfile {
 }
 
 header {
-	height:150px;
 	width:100%;
 	background:#eee;
 	margin:0px;
 	border-bottom: solid 1px #ccc;
-					background-image:-o-linear-gradient(top,#f6f6f6,#ececec);
-					background-image:-webkit-linear-gradient(top,#f6f6f6,#ececec);
-					background-image:-moz-linear-gradient(top,#f6f6f6,#ececec);
-					background-image:linear-gradient(top,#f6f6f6,#ececec);
-					filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#f6f6f6', endColorstr='#ececec');			
+	padding-bottom:20px;
+	background-image:-o-linear-gradient(top,#f6f6f6,#ececec);
+	background-image:-webkit-linear-gradient(top,#f6f6f6,#ececec);
+	background-image:-moz-linear-gradient(top,#f6f6f6,#ececec);
+	background-image:linear-gradient(top,#f6f6f6,#ececec);
+	filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#f6f6f6', endColorstr='#ececec');			
 								
 }
 
