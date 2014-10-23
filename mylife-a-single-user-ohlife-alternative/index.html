@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>MyLife: A single-user OhLife alternative</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+		<style>
+			.cmdline {
+				font-family: monospace;
+				color:white;
+				background:black;
+				font-size:13px;
+				padding:2px;
+				font-weight: normal;
+			}
+			img {
+				box-shadow: grey 0px 0px 2px;
+				padding:0px;
+			}
+
+			li {
+				margin-bottom:12px;
+			}
+			#screenshots a img {
+				display:inline-block;
+				margin:5px;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>MyLife: A single-user OhLife alternative</h2>
+				<small>
+					Posted: <time>2014-10-23</time> 
+					Last updated: <time datetime="2014-10-23">2014-10-23</time>
+				</small>
+			
+				<h4>OhLife shuts down</h4>
+				<p>
+					On October 19th, 2014, <a href="http://ohlife.com">OhLife</a> shut down its site. OhLife was an extremely simple personal journal website. Every day it sent you an email, saying "How was your day?" and you simply replied to that email with some description of your day. You could also attach an image to the email which would then be saved with your post. The OhLife website then allowed you to view and edit your journal. 
+                </p>
+                <div>
+                	<img src="ohlife.png" alt="The OhLife shutdown notice"/>
+                </div>
+                <p>
+                	OhLife was not a blog, or social in any way. The posts were not viewable by anyone but yourself. Their main gimmick was that in every email they sent you they included your entry from one year before. It's surprisingly fun to get a reminder of what you were doing a year ago. I've often tried maintaining a journal, but OhLife is the only one that I've managed to write in for more than a few days. Mostly because I am obsessive about keeping my inbox empty. When OhLife shut down I had 1476 entries, so more than 3 years worth.
+                </p>
+
+                <h4>Building an alternative</h4>
+                <p>
+                	When I heard that OhLife was shutting down I wanted to keep writing a journal through email. The <a href="https://news.ycombinator.com/item?id=8345881">Hacker News thread</a> about the shutdown mentioned a few alternatives, but I wasn't really eager to start using another website that might just shut down in a few months. After all, it seemed like OhLife couldn't make things work out financially, so why should other sites? So, I decided to create my own version!
+                </p>
+                <p>
+                	There are plenty of places that can host a simple website, but the most important thing for me was to be able to write simply by answering emails. There are a couple of important rules about running your own mail server:
+                </p>
+                <ol>
+                	<li>Don't!</li>
+                	<li>Really, don't!</li>
+                </ol>
+                <p>
+                	Then I remembered that <a href="https://cloud.google.com/appengine/docs">Google App Engine</a> had the option of receiving mail, it simply gets posted to your app like a normal web request. App Engine also has a free quota, so I could host the whole thing there. The free quota isn't a lot, but since I basically only need to send out one email and receive one email per day it's more than enough for my needs. I rarely view my journal online, I mostly just read the year-old entries that come by email and answer them. But I still wanted to be able to edit and delete entries, so I ended up building a full-featured OhLife alternative, called...
+                </p>
+
+                <h4>MyLife</h4>
+
+ 				<p>
+ 					MyLife is written in Python, and is meant to be hosted on App Engine. You need to be fairly technical to set it up, but once you've done that it's easy to use. It has the following features:
+ 				</p>
+ 				<ol>
+ 					<li>Send you an email every day, including an old entry from a year/month/week ago</li>
+ 					<li>Image attachments in your reply email will be saved with your post</li>
+ 					<li>Edit and delete posts and images in a simple web interface</li>
+ 					<li>Import entries from OhLife</li>
+ 					<li>Export all entries and photos, in the same format as OhLife used, so you can easily import it into some other OhLife alternative</li>
+ 					<li>Configure when you want your email, and what email address should be used</li>
+ 					<li>Authenticate with your Google account, so no passwords are stored</li>
+ 				</ol>
+ 				<p>
+ 					Those are all the features I need and am interested in, so there probably won't be any updates to this, ever. I like simplicity :) The web interface is simple, but does everything I need. Like the title says this is a single-user application. I don't want to host other peoples journals, I just want to host my own and be sure that no company can shut it down. But you are free to host <em>your</em> own journal using my code...
+ 				</p>
+
+  				<h4>Screenshots</h4>
+ 				<div id="screenshots">
+ 					<a href="mylife-write.png" target="_blank"><img src="mylife-write-thumb.png"/></a>
+ 					<a href="mylife-frontpage.png" target="_blank"><img src="mylife-frontpage-thumb.png"/></a>
+ 					<a href="mylife-settings.png" target="_blank"><img src="mylife-settings-thumb.png"/></a>
+ 				</div>
+				
+ 				<h4>Setup instructions</h4>
+
+ 				<p>
+ 					Before you try setting up MyLife I would just like to say...
+ 				</p>
+ 				<p>
+ 				<strong>This software is provided AS-IS, use it at your own risk. I take no responsibility for any security issues, data loss, email parsing failures or anything else which might happen. You are free to inspect the source code to verify that it meets your needs. You should also check your first few entries to make sure that your emails are being parsed correctly. I have only tested emails from Gmail and the iPhone mail app, I have no idea if other mail clients might mess up some formatting. </strong>
+ 				</p>
+ 				<p>
+ 					Ok, now that that's out of the way...
+ 				</p>
+ 				<ol>
+ 					<li>Download and install the <a href="https://cloud.google.com/appengine/downloads">App Engine SDK for Python</a></li>
+ 					<li>Create a new App Engine application, give it some unique id. We'll call it "yourappid" for the rest of these instructions. Choose "Google Authentication" for the authentication option.</li>
+ 					<li>Download the source code from <a href="https://github.com/einaregilsson/MyLife">https://github.com/einaregilsson/MyLife</a>.
+ 					</li>
+ 					<li>Go into the MyLife folder. Type <span class="cmdline">appcfg.py -A yourappid update . </span></li>
+ 					<li>Go to https://yourappid.appspot.com. If you're not logged into your Google account you will be prompted to give the application permission to get your email address. </li>
+ 					<li>Go the the settings page on your app and configure when you want your email, and which email address should be used (by default it will use your Google address)</li>
+ 					<li>That's it! You should get an email later in the day!</li>
+ 				</ol>
+
+ 				<h4>Importing your OhLife backup</h4>
+ 				<p>
+ 					Go to the Settings page at https://yourappid.appspot.com/settings. At the bottom there is an option to import OhLife entries. It expects a zip file which contains one .txt file and optionally some image files. If you have downloaded your final backup from OhLife the file will already be in the right format.
+ 				</p>
+ 				<p>
+ 					The import is the only time you might actually run into problems with the free quota on App Engine. There are a limited number of write operations per day, and you might run out. My backup had 1476 posts, but only 3 photos, and that used about 38% of my daily write quota. If you have a lot more photos you might not be able to import everything in one go. If that happens you have two options: 
+ 				</p>
+ 				<ol>
+ 					<li>Enable billing for your app in App Engine</li>
+ 					<li>Import the same zip file again the next day. It will ignore any posts where there's already a post for that date in the database, so it will only import the posts that weren't imported the day before.</li>
+ 				</ol>
+ 				<h4>Some notes</h4>
+ 				<ul>
+ 					<li>
+ 						MyLife uses Google authentication. That means that if someone else goes to https://yourappid.appspot.com they will get prompted to give your application access to their Google account, which is kind of weird. However, the application is configured to only give administrators access, and the only administrator is the Google account who created the application in App Engine. So, even if other people go to your page they will just end up getting a "Not allowed" page. If you give someone else Administrator rights on your application then they will also have full access to your journal.
+ 					</li>
+ 					<li>
+ 						This is a personal journal, so you shouldn't give out your app id. Yes yes, security by obscurity is not an answer, but there's just no reason to give it out, and it's extremely easy to DDos an App Engine app that is just using the free daily quota.
+ 					</li>
+ 					<li>
+ 						Text takes almost no space, but images might. I keep the full size version of each image, and a scaled down version. The free quota for the Blobstore is 5GB, if you go over that you'll need to either enable billing for your application, or delete some photos.
+ 					</li>
+ 					<li>
+ 						Verify your posts after import, and check that the first few email posts are being parsed correctly. I'm parsing the html version of the emails, because in the emails I got from Gmail they kept inserting hard linebreaks in the middle of my lines in the plaintext version. If anyone knows why, or how that could be fixed please let me know.
+ 					</li>
+ 				</ul>
+ 				<p>
+ 					And that's it! I've been using MyLife now for about three weeks, and so far it's been working perfectly for my needs! Let me know in the comments or <a href="mailto:einar@einaregilsson.com">by email</a> if you end up using it :)
+ 				</p>
+ 			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>
