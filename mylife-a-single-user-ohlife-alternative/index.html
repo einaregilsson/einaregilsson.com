@@ -110,7 +110,7 @@
  					<li>Go into the MyLife folder. Type <span class="cmdline">appcfg.py -A yourappid update . </span></li>
  					<li>Go to https://yourappid.appspot.com. If you're not logged into your Google account you will be prompted to give the application permission to get your email address. </li>
  					<li>Go the the settings page on your app and configure when you want your email, and which email address should be used (by default it will use your Google address)</li>
- 					<li>That's it! You should get an email later in the day!</li>
+ 					<li>That's it! You'll get the first email immediately after you've logged in, so you can try replying and seeing how it works. After that you'll get an email daily at the time you choose.</li>
  				</ol>
 
  				<h4>Importing your OhLife backup</h4>
@@ -124,6 +124,9 @@
  					<li>Enable billing for your app in App Engine</li>
  					<li>Import the same zip file again the next day. It will ignore any posts where there's already a post for that date in the database, so it will only import the posts that weren't imported the day before.</li>
  				</ol>
+ 				<p>
+ 					You might see a 'Waiting for import to start' message after you upload the zip file and it might be there for up to 2 minutes without anything happening. Don't worry about it, just wait, it will start eventually. This happens because App Engine limits requests to 30 seconds so the actual import is run in a task queue, and when you start a task in a task queue in App Engine it doesn't necessarily start right away.
+ 				</p>
  				<h4>Some notes</h4>
  				<ul>
  					<li>
