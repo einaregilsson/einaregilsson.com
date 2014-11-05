@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>MyLife: Backup to Dropbox</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+		<style>
+			
+			img {
+				box-shadow: grey 0px 0px 2px;
+				padding:0px;
+			}
+
+			li {
+				margin-bottom:12px;
+			}
+			li div {
+				margin:20px;
+				margin-left:-20px;
+			}
+			#screenshots a img {
+				display:inline-block;
+				margin:5px;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>MyLife: Backup to Dropbox</h2>
+				<small>
+					Posted: <time>2014-11-05</time> 
+					Last updated: <time datetime="2014-11-05">2014-11-05</time>
+				</small>
+
+				<h4>A new feature</h4>
+				<p>
+					A couple of weeks ago I release an open source project called <a href="/mylife-a-single-user-ohlife-alternative">MyLife</a>. It was a replacement for the personal journal website <a href="https://ohlife.com">OhLife</a> which had recently shut down. The project didn't get much attention, but it did get a couple of users using it, and one of them posted an <a href="https://github.com/einaregilsson/MyLife/issues/1">issue on Github</a> asking for better export options, and suggested that an export to Dropbox would be useful. I liked the idea, mostly because I'm a Dropbox user myself and this was a good opportunity to play around with the Dropbox API so I went ahead and added the feature.
+				</p>
+				<p>
+					The way to integrate with Dropbox is to create a Dropbox App. Each app gets its own app key and app secret. This immediately posed a problem, since MyLife is only released as source code. Should I release something called an app secret with the code? That seems wrong, so the way this works is that if you want to use the backup to Dropbox feature you must create your own Dropbox app and get your own app key and secret and can generate your own access code. It's not complicated, below are instructions for doing just that.
+				</p>
+				<p>
+					<strong>Like always, the following applies: This software is provides AS-IS, I take no responsibility for any issues you might run into when following these instructions or trying to get this set up. This worked for me in this way. Use at your own risk!</strong>
+				</p>
+
+				<h4>Setting up your own Dropbox app</h4>
+
+				<ol>
+					<li>
+						Go to <a href="https://www.dropbox.com/developers"> and sign in with the Dropbox account you want to use for your backups.
+					</li>
+					<li>
+						Go to the <a href="https://www.dropbox.com/developers/apps">App Console</a> page and click the <a href="https://www.dropbox.com/developers/apps/create">Create App</a> button in the upper right corner.
+					</li>
+					<li>
+						Choose the following options:
+						<ul>
+							<li>What type of app do you want to create? <strong>Dropbox API app</strong></li>
+							<li>What type of data does your app need to store on Dropbox? <strong>Files and Datastores</strong></li>
+							<li>Can your app be limited to its own folder? <strong>Yes, my app only needs access to files it creates.</strong></li>
+							<li>App name: You'll need to find your own name here. The name is unique across all Dropbox apps, so you can't just use MyLife, just use MyLife-1234567 or something like that.
+						    <div><a href="createapp.png" target="_blank"><img src="createapp-small.png" /></a></div></li>
+
+						</ul>
+					</li>
+					<li>
+						Press the "Create App" button to create your app.
+					</li>
+					<li>
+						You are now on the Settings page for your app. Go down to the OAuth 2 section and under "Generated access token" press the Generate button. The button will disappear and instead a long random access token will be shown. Copy this token. Don't worry about any of the other OAuth 2 settings, we don't need anything else there, no urls or anything.
+						<div><a href="appsettings.png" target="_blank"><img src="appsettings-small.png" /></a></div>
+					</li>
+					<li>
+						You can optionally change some more things in the settings for your Dropbox app, e.g. change the App folder name to "MyLife Backup" or whatever you want it to be. The status of the app will be "Development" and that's fine, you never have to press the "Apply for Production" button, since you are the only user of this app and we don't really want it listed anywhere. Development status is fine for backups for one user.
+					</li>
+				</ol>
+
+				<h4>Setting up the backup in MyLife</h4>
+				<ol>
+					<li>
+						Make sure you have downloaded and published the <a href="https://github.com/einaregilsson/MyLife">latest version of MyLife</a>.
+					</li>
+					<li>
+						Log into MyLife and go to the Settings page. Paste the token you got in your Dropbox app into the "Dropbox Access Token" field and press the "Save Settings" button.
+						<div><a href="mylifesettings.png" target="_blank"><img src="mylifesettings-small.png" /></a></div>
+					</li>
+				</ol>
+				<p>
+					That's it! Now every day at midnight MyLife should backup all your posts into a MyLife.txt file in your Dropbox app folder (App folders are in Dropbox/Apps/YourChosenFolderName) and your images should be therea as well. 
+				</p>
+				<p>
+					Like always with a free App Engine account you might run into quota limitations, especially if you have a lot of photos (which I don't). If your MyLife instance runs out of quota during the nightly backup then the next nightly backup will just continue where the last one left off, so it might take a couple of attempts before all your photos are backed up in Dropbox. After a couple of days, when all your old photos are backed up there shouldn't be any more problems because every day you're just backing up the photos from that day. Let me know if you have problems with this or have ideas for improvement!
+				</p>
+ 			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>
