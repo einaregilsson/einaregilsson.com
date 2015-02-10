@@ -44,7 +44,7 @@
 					aws-42.co.uk<br/>
 				</p>
 				<p>
-					What I really wanted to do was just copy that whole text block, and paste it into iwantmyname's UI, reducing the copying and pasting from 60 times to 15. One way to do that woudl be if they just had one big <span class="tty">&lt;textarea /&gt;</span> tag for the nameservers instead of 5 input boxes. However, each input box displays red or green depending on if the server name in it is valid, and that wouldn't really work in a textarea. Not to mention that having just one textarea would look ugly.
+					What I really wanted to do was just copy that whole text block, and paste it into iwantmyname's UI, reducing the copying and pasting from 60 times to 15. One way to do that would be if they just had one big <span class="tty">&lt;textarea /&gt;</span> tag for the nameservers instead of 5 input boxes. However, each input box displays red or green depending on if the server name in it is valid, and that wouldn't really work in a textarea. Not to mention that having just one textarea would look ugly.
 				</p>
 				<p>
 					So, my idea was that if you put the cursor in the first input box, and pasted a multiline block of text it would be split up into lines, and each line put in its own input box and validated. Best of both worlds, the normal UI looks good and is easy to use, but you can still paste multiple nameservers easily! This could be applicable to many cases where you have a list of things to enter, and you want to validate each one. I created a quick JSFiddle to demonstrate this:
