@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Multi Input Paste: A better UX for multiple input boxes</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+		<style type="text/css">
+			.tty {
+				font-family:'Courier New', monospace;
+				font-size:16px;
+				line-height:18px;
+				font-weight:bold;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Multi Input Paste: A better UX for multiple input boxes</h2>
+				<small>
+					Posted: <time>2015-02-10</time> 
+					Last updated: <time datetime="2015-02-10">2015-02-10</time>
+				</small>
+			
+				<p>
+					I've been using <a href="https://iwantmyname.com">iwantmyname.com</a> for all my domains in the last few months. I'm generally very happy with them, the support has been good, and the one time I tweeted them about
+					an error regarding icelandic phone numbers for 2-factor auth they fixed the issue within an hour! So this post is not a criticism of them, just more of a general thought about good UX, that's both useful for simple use cases and for power users.
+				</p>
+
+				<p>
+					I recently needed to change the nameservers for all my domains. I have 15 domains, and each domain has 4 nameservers, so all in all there were 60 input fields that needed to be changed. I started diligently copying and pasting each one, but after the first two domains I thought there must be an easier way to do this! After all, why spend 15 minutes doing manual work, when you can spend an hour and find a nice technical solution? ;)</p>
+
+				<p>
+					My nameservers are in AWS, and they list the nameservers for each domain in a block of text, like so:
+				</p>
+				<p class="tty">
+					aws-4-8.co.uk<br/>
+					aws-15.com<br/>
+					aws-16-23.net<br/>
+					aws-42.co.uk<br/>
+				</p>
+				<p>
+					What I really wanted to do was just copy that whole text block, and paste it into iwantmyname's UI, reducing the copying and pasting from 60 times to 15. One way to do that woudl be if they just had one big <span class="tty">&lt;textarea /&gt;</span> tag for the nameservers instead of 5 input boxes. However, each input box displays red or green depending on if the server name in it is valid, and that wouldn't really work in a textarea. Not to mention that having just one textarea would look ugly.
+				</p>
+				<p>
+					So, my idea was that if you put the cursor in the first input box, and pasted a multiline block of text it would be split up into lines, and each line put in its own input box and validated. Best of both worlds, the normal UI looks good and is easy to use, but you can still paste multiple nameservers easily! This could be applicable to many cases where you have a list of things to enter, and you want to validate each one. I created a quick JSFiddle to demonstrate this:
+				</p>
+				<iframe width="100%" height="630" src="http://jsfiddle.net/einaregilsson/p5py2r08/5/embedded/result,js,html,css" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+				<p>
+					The way it works is simple: subscribe to the <span class="tty">paste</span> event in the first input box, split up the text if it's
+					multiple lines and put them in the input boxes. Finally, trigger the <span class="tty">blur</span> event on each changed input, to activate the validation immediately.
+				</p>
+				<p>
+					I also created a quick user script for iwantmyname, so I could use this immediately myself. The user script can be <a href="iwantmyname.user.js">downloaded here</a>. So, all in all I spent a lot more time on this than I would have if I had copy-pasted 60 times, but hey, at least I had fun doing it :)
+				</p>
+ 			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>
