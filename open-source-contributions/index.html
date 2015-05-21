@@ -15,11 +15,15 @@
 				<h2>Open Source Contributions</h2>
 				<small>
 					Posted: <time>2007-07-23</time>
-					Last updated: <time datetime="2012-04-19">2012-04-19</time>
+					Last updated: <time datetime="2015-05-21">2015-05-21</time>
 				</small>
 
 				<p>I've contributed small fixes or features to some open source projects. Mostly it's when I've needed something myself and then figured I might as well send the changes to the project owners.</p>
 
+				<p><strong><a title="A .NET package manager" href="https://github.com/NuGet/">NuGet:</a></strong> We were using NuGet at Trustpilot and I wanted to be able to read credentials for private package sources from environment variables instead of having to add them to files in the repository. So I submitted <a href="https://nuget.codeplex.com/workitem/3916">Issue 3916</a>, implemented the features, and submitted <a href="https://nuget.codeplex.com/SourceControl/network/forks/einaregilsson/NuGet/contribution/5893">Pull Request 5893</a> for it. The main part being the <a href="https://github.com/NuGet/NuGet3/blob/b40d048a7e0b183aa659b8ff7fbcc4d674b7bcdb/src/NuGet.Configuration/PackageSource/PackageSourceProvider.cs#L281-L296">ReadCredentialFromEnvironment</a> method, along with some unit tests. The pull request got merged in August 2014, and is part of NuGet 3.0.
+				</p>
+
+				</p>
 				<p><strong><a title="A document database" href="http://www.mongodb.org/">MongoDB:</a></strong> We are using MongoDB in my job at <a href="http://www.trustpilot.com">Trustpilot</a>, and I've submitted a couple of pull requests for the C# driver for things that I needed, mainly around profiling. I submitted <a href="https://github.com/mongodb/mongo-csharp-driver/pull/143">Pull Request 143</a> to add a missing field to the SystemProfileInfo object and <a href="https://github.com/mongodb/mongo-csharp-driver/pull/144">Pull Request 144</a> to fix a number of issues around the serialization of lock statistics in the system.profile collection. Both of those were accepted and released in v1.8 of the driver. I've also submitted <a href="https://github.com/mongodb/mongo-csharp-driver/pull/139">Pull Request 139</a> which adds a couple of features to the LINQ provider to explain queries and specify which index to use. That one hasn't been accepted yet but hopefully will soon.</p>
 
 				<p><strong><a title="The blogging system used to run this web" href="http://wordpress.org">Wordpress:</a></strong> I submitted <a href="http://trac.wordpress.org/ticket/4739">bug 4739</a> and a patch for it. It finally made it into trunk in <a href="http://core.trac.wordpress.org/changeset/15930">changeset 15930</a> and was released in Wordpress 3.1. It fixes the transformation from Icelandic letters to ASCII when creating page slugs. I previously wrote about it in <a href="../icelandic-letters-in-wordpress-permalinks/">this blog post</a>.</p>
