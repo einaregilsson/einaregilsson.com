@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>MyLife: Google Cloud Storage Support</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+		<style>
+			.cmdline {
+				font-family: monospace;
+				color:white;
+				background:black;
+				font-size:13px;
+				padding:2px;
+				font-weight: normal;
+			}
+			img {
+				box-shadow: grey 0px 0px 2px;
+				padding:0px;
+				margin:10px auto;
+			}
+
+			li {
+				margin-bottom:12px;
+			}
+			#screenshots a img {
+				display:inline-block;
+				margin:5px;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>MyLife: Google Cloud Storage Support</h2>
+				<small>
+					Posted: <time>2015-07-31</time> 
+					Last updated: <time datetime="2015-07-31">2015-07-31</time>
+				</small>
+			
+				<h4>Why am I changing MyLife?</h4>
+				<p>
+					When I originally created <a href="mylife-a-single-user-ohlife-alternative">MyLife</a> I thought I could just make it and let it run forever. I didn't really want a lot of features, so I just made the initial version, then added <a href="mylife-backup-to-dropbox">Dropbox support</a> and then I thought I was done! But, now Google App Engine is <a href="https://cloud.google.com/appengine/docs/deprecations/files_api?hl=en">deprecating the files api</a> that I was using for images and import/export, and they want you to use Google Cloud Storage instead. Since I want to continue using MyLife I went and added support for Google Cloud Storage and added a migration option to move your existing images from the old Blobstore to your new Google Cloud Storage bucket! 
+                </p>
+                <h4>How do I update to the new version?</h4>
+                <p>
+                	First of all you can go to <a href="https://github.com/einaregilsson/MyLife/releases">https://github.com/einaregilsson/MyLife/releases</a> and download the zip file there. Before you actually update the app though, you should check to see if you already have a Google Cloud Storage bucket for your app. Google keeps changing their App Engine dashboard, moving things around and removing some things. So, start by going to <a href="http://appengine.google.com">http://appengine.google.com</a>, select your project to see the App Engine dashboard. Then go to <strong>Administration->Application Settings</strong>. If your screen there has a Google Cloud Storage bucket like in the screenshot below then you're good to go.
+                </p>
+
+                <div>
+                	<img src="dashboard.png" alt="The Application settings"/>
+                </div>
+                <p>
+                	If there's no bucket there then go to the bottom of the page, under <strong>Cloud Integration</strong>. There should be a button there to create a cloud project, press that and wait a while, then you should have a Cloud Storage bucket. <strong>Do not try to create the bucket manually</strong>, if you do that it will not fall under the free App Engine quota.
+				</p>
+                <div>
+                	<img src="cloudintegration.png" alt="Creating a cloud project"/>
+                </div>
+                <p>
+                	Once you have the bucket ready then you can upload the new version of the code. Go into the folder where you unzipped the source and type:
+                </p>
+                <div class="cmdline">
+                	appcfg.py -A yourappid update .
+                </div>
+                <p>
+                	That should publish the new version of the code. Once that's done you should go to the web interface at https://yourappid.appspot.com and try writing a post and uploading a couple of images, just to make sure the storage bucket is working.
+                </p>
+                <h4>Final step: Migrating existing images</h4>
+                <p>
+                	The new version of the code does not serve images from the old Blobstore. You need to migrate them to your shiny new Cloud Storage bucket. To do that you can go to the Settings page in your app, and at the bottom you should see this:
+                </p>
+				<div>
+                	<img src="migrate.png" alt="The Migration for old images"/>
+                </div>               
+                <p>
+                	Press the large button and your existing images should be migrated to the Google Cloud Storage bucket. It might take a while. Once that's done you're fully upgraded to the new version, and hopefully won't have to upgrade ever again!!! :)
+                </p>
+ 			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>
