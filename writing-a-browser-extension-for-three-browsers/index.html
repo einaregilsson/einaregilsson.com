@@ -5,12 +5,28 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Writing a browser extensions for three browsers</title>
 		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+		<style>
+			.image {
+				text-align: center;
+
+			}
+			.image img {
+				padding:0px;
+				box-shadow:gray 0 0 3px;
+				margin-top:4px;
+			}
+			.image span {
+				display:block;
+				padding-top:20px;
+				font-weight:bold;
+			}
+		</style>
 	</head>
 	<body>
 		<header>
 			<h1><a href="../">Einar Egilsson</a></h1>
 		</header>
-		<div id="content">			
+		<div id="content">
 			<article>
 				<h2>Writing a browser extension for three browsers</h2>
 				<small>
@@ -18,8 +34,67 @@
 					Last updated: <time datetime="2015-09-25">2015-09-25</time>
 				</small>
 			
-				<p></p>
+				<h3>In the beginning there was Firefox...</h3>
+				<p>
+					Way back in 2007 I was really interested in writing Firefox extensions, and wrote quite a few of them. I later stopped using Firefox and stopped developing all my Firefox extensions, except two: <a href="/scroll-search-engines/">Scroll Search Engines</a> and <a href="/redirector">Redirector</a>. Those two were used by a few thousand people each, so I felt like I should at least keep them going, but basically I only updated them when something stopped working in new versions of Firefox.
+				</p>
+				<p>
+					In 2015 Mozilla announced that they were implementing the <a href="https://wiki.mozilla.org/WebExtensions">WebExtensions API</a>, which is essentially the extension API in Google Chrome and Opera. I thought this was interesting. I've developed a couple of Chrome extensions, and I like their extension API a lot better than Firefox's. I also knew that Redirector was not compatible with the new multiprocess Firefox that's coming out soon, so I decided to see if I could write a new version of Redirector using the WebExtensions API, and as a bonus release the extension on Chrome and Opera as well.
+				</p> 
+				<div class="image">
+					<span>The new Redirector logo</span>
+					<img src="logo.png"/>
+				</div>
+				<h3>Creating a Chrome/Opera extension</h3>
+				<p>
+					The UI for Redirector was written in HTML (I had changed it from XUL at some point in 2010), so in theory I could have stuck with the same UI, but it was really ugly, and I wanted to learn a bit more about <a href="https://angularjs.org/">angular.js</a>, so I decided to write a completely new UI using Angular. I started by essentially re-writing Redirector as a Chrome extension, testing it on Chrome and making sure it worked correctly there. That was easy, the WebExtensions API has a <a href="https://developer.chrome.com/extensions/webRequest">WebRequest</a> object that is essentially built for doing exactly what Redirector does, listening to requests and redirecting them. So getting the extension working on Chrome working was fun, the API worked well and I was happy with the UI. Once Chrome worked I tested on Opera and that didn't need any changes at all, it just worked exactly like on Chrome. So the only browser left was Firefox!
+				</p>
+				<div class="image">
+					<span>The old UI</span>
+					<img src="old-ui.png"/>
+				</div>
+				<div class="image">
+					<span>The new UI</span>
+					<img src="new-ui.png"/>
+				</div>
+				<h3>Porting to Firefox</h3>
+				<p>
+					At this point WebExtensions support in Firefox had only been announced a couple of weeks previously, and it was only available in the <a href="https://nightly.mozilla.org/">Nightly</a> development build. I started by testing the extension as it was, but it was clear that the Firefox implementation was nowhere near ready. The redirecting worked, but the toolbar button had some serious issues, and I had another problem, which was that the WebExtensions API has no file system access, and I wanted to automatically migrate existing users of Redirector, and for that I needed to access the Redirector.rjson file which stores their redirects. I also figured that WebExtensions might not be released and supported by <a href="http://addons.mozilla.org">addons.mozilla.org</a> until well after multiprocess Firefox was released, which would mean the extension would stop working for weeks or months. 
+				</p>
+				<p>
+					At this point I was really interested in finishing the rewrite and getting a working new version out there. So I started thinking that I could release an interim version for Firefox, which would use the old Firefox extension model, but include the new UI. A bonus would be that it would have filesystem access and could migrate the existing redirects of users to some place where in the future the WebExtensions API could load them from.
+				</p>
+				<p>
+					Firefox has their own <a href="https://developer.mozilla.org/en-US/Add-ons/SDK">Add-on SDK</a> to simplify writing extensions. It makes the experience a lot nicer than it was back in 2007 when I was writing my extensions, but it doesn't give you the same full access to the browser internals as the old extension model did. Nevertheless, it's a nice API and I decided to use that to make the interim version of Redirector for Firefox. I didn't want to maintain two different branches of the code though, so I thought it would be interesting to try to use the same code in all versions of the extension, even though one was using WebExtensions and the other was using the Firefox Add-on SDK.
+				</p>
+				<h3>Writing a chrome.* polyfill</h3>
+				<p>
+					The Add-on SDK has the concept of a main script, which is the entry point for the extension and has access to all the APIs, and then Content scripts, which can interact with web pages. This is similar to WebExtensions, where there is a background script, and content scripts. I decided that my background script for the Chrome extension would become the main script for the Firefox version, and I would simply write a polyfill for the chrome.* apis, so the logic of the extension could just use the chrome.* apis without knowing which browser it was running in. Fortunately the WebRequest API had already been included in Firefox 41, so I didn't need to write that, only expose it as <strong>chrome.webRequest</strong>. I copied the implementation of <strong>chrome.storage</strong> from Firefox Nightly, and then I wrote my own implementations of <strong>chrome.tabs</strong>, <strong>chrome.runtime</strong> and <strong>chrome.browserAction</strong>. In all cases I just wrote the absolute minimum needed to make my extension work, so these are not polyfills that you could use for any extension that uses these apis.  
+				</p>
+				<code data-language="js">
+if (typeof chrome == 'undefined') {
+	console.log('Creating fake chrome...');
+	isFirefox = true;
+	var firefoxShim = require('./firefox/background-shim');
+	chrome = firefoxShim.chrome;
+	Redirect = firefoxShim.Redirect;
+	log = firefoxShim.log;
+	exports.onUnload = function (reason) { 
+		log('Unloading (' + reason + '), removing listeners');
+		redirectEvent.removeListener(checkRedirects);
+		chrome.storage.onChanged.removeListener(monitorChanges);	
+		chrome.storage.clearCache(); //<-Firefox specific
+	};
+}
+</code>
 
+				<p>
+					The above code is at the top of the background.js file. It pulls in Firefox specific functionality and creates the <strong>chrome</strong> object, so after that the code can just run and not have <pre>if (isFirefox) { ... } </pre> checks everywhere. I did have to make some weird hacks to get the UI working correctly, since in Firefox the HTML pages didn't have access to anything except the message passing API to communicate with the background script, but in the end I got it working with a bit of weird script loading and a lot of message passing :)
+				</p>
+				<h3>The result</h3>
+				<p>
+					The result of all this is Redirector 3.0.3, available for <a href="https://chrome.google.com/webstore/detail/redirector/ocgpenflpmgnfapjedencafcfakcekcd">Chrome</a>, <a href="https://addons.mozilla.org/en-US/firefox/addon/5064">Firefox</a> and <a href="javascript:alert('Sorry, still waiting for extension review to be done!">Opera</a>. This was a fun little project, and I'm happy with the results. When WebExtensions support in Firefox is ready I'll just remove all the polyfill code and then I'll (hopefully) have the exact same code for all the browsers. You can look at the code at <a href="https://github.com/einaregilsson/Redirector/tree/3.0.3">http://github.com/einaregilsson/Redirector/tree/3.0.3</a> and the Firefox specific stuff is at <a href="https://github.com/einaregilsson/Redirector/tree/3.0.3/js/firefox">https://github.com/einaregilsson/Redirector/tree/3.0.3/js/firefox</a>.
+				</p>
 				
 			</article>
 			<hr>
