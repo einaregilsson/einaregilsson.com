@@ -21,9 +21,11 @@
 
 				<code data-language="python">
 if os.environ.get('SERVER_SOFTWARE','').startswith('Dev'):
-    from google.appengine.tools.dev_appserver import FakeFile
+    from google.appengine.tools.devappserver2.python.stubs import FakeFile
     FakeFile.ALLOWED_MODES = frozenset(['a','r', 'w', 'rb', 'U', 'rU'])
 				</code>
+
+				<p><strong>Update 18.12.2015:</strong> Updated to use the correct import path for the latest version of the SDK. Thanks to Dan Lester.</p>
 			</article>
 			<hr>
 			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
