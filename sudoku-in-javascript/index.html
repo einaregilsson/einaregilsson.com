@@ -29,7 +29,7 @@
                     It explains how he wrote a simple Sudoku Solver in Python using constraint propagation and backtracking search.
                     So instead of trying to write everything from scratch in Javascript I decided to start by porting his
                     Sudoku solver to Javascript, and in the process understand it better and figure out what else I would
-                    need to write a full game. The result of doing this is a fully working <a href="http://www.sudoku-webgame.com">Sudoku game</a> and a <a href="http://github.com/einaregilsson/sudoku.js">Sudoku library</a> for Javascript.
+                    need to write a full game. The result of doing this is a fully working <a href="https://cardgames.io/sudoku/">Sudoku game</a> and a <a href="http://github.com/einaregilsson/sudoku.js">Sudoku library</a> for Javascript.
                 </p>
 
                 <p>
@@ -133,7 +133,7 @@ Generating 50 puzzles...
 Generated 50 puzzles in 43797 milliseconds, 875.94ms per puzzle
 			</p>
 			<p>
-				875 milliseconds per generated puzzle isn't exactly great. I was planning on generating a new puzzle at the start of every game on <a href="http://www.sudoku-webgame.com">http://www.sudoku-webgame.com</a>, but adding almost a second to the load time of the page simply wasn't good enough. I could always see the delay and it annoyed me. So, what I decided to do instead was to just pre-generate a good batch of puzzles and ship them with the game, and then randomly choose one when the game starts. It kind of annoys me, because I'd prefer to generate on-the-fly, but I want things to feel fast. Maybe someday I'll generate new puzzles on the client in a web worker or something, and store them in local storage for future use.
+				875 milliseconds per generated puzzle isn't exactly great. I was planning on generating a new puzzle at the start of every game on <a href="https://cardgames.io/sudoku/">http://www.sudoku-webgame.com</a>, but adding almost a second to the load time of the page simply wasn't good enough. I could always see the delay and it annoyed me. So, what I decided to do instead was to just pre-generate a good batch of puzzles and ship them with the game, and then randomly choose one when the game starts. It kind of annoys me, because I'd prefer to generate on-the-fly, but I want things to feel fast. Maybe someday I'll generate new puzzles on the client in a web worker or something, and store them in local storage for future use.
 			</p>
 			<p>
 				I did try a few hacks to make it faster, for example removing 5-10 squares at once before checking if the puzzle was
