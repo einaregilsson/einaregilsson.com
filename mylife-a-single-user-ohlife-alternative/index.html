@@ -109,10 +109,16 @@
  				<ol>
  					<li>Download and install the <a href="https://cloud.google.com/appengine/downloads">App Engine SDK for Python</a></li>
  					<li>Create a new App Engine application, give it some unique id. We'll call it "yourappid" for the rest of these instructions. Choose "Google Authentication" for the authentication option.</li>
- 					<li>Download the source code from <a href="https://github.com/einaregilsson/MyLife">https://github.com/einaregilsson/MyLife</a>.
+ 					<li>Download the source code from <a href="https://github.com/einaregilsson/MyLife">https://github.com/einaregilsson/MyLife</a>. If you want a stable release take one from the <a href="https://github.com/einaregilsson/MyLife/releases">Releases page</a>.
  					</li>
  					<li>Go into the MyLife folder. Type <span class="cmdline">appcfg.py -A yourappid update . </span></li>
  					<li>Go to https://yourappid.appspot.com. If you're not logged into your Google account you will be prompted to give the application permission to get your email address. </li>
+ 					<li id="setup-bucket">Now you need to create a Google Cloud Storage bucket for your images and other files. Goto https://appengine.google.com/settings?&app_id=s~yourappid, and on the bottom of the page is a heading called <strong>Cloud Integration</strong>. Click on the <strong>Create</strong> button there.
+ 					<img src="cloudintegration.png" style="margin:10px"/> Wait a couple of minutes and then refresh the page. You should see at the top of the page the name of your bucket, when you see that then it's ready.
+ 					<img src="dashboard.png" style="margin:10px"/>
+ 					<strong>You must create your bucket like this, not manually. If you do it manually you will have to enable billing and it will not be part of your free quota!</strong>
+ 					</li>
+ 					
  					<li>Go the the settings page on your app and configure when you want your email, and which email address should be used (by default it will use your Google address)</li>
  					<li>That's it! You'll get the first email immediately after you've logged in, so you can try replying and seeing how it works. After that you'll get an email daily at the time you choose.</li>
  				</ol>
