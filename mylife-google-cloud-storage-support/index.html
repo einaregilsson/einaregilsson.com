@@ -38,9 +38,12 @@
 				<h2>MyLife: Google Cloud Storage Support</h2>
 				<small>
 					Posted: <time>2015-07-31</time> 
-					Last updated: <time datetime="2015-07-31">2015-07-31</time>
+					Last updated: <time datetime="2017-01-05">2017-01-05</time>
 				</small>
 			
+				<p class="update">
+					<strong>UPDATE Jan 5th, 2017: </strong> These steps are not necessary if you are starting your MyLife instance in 2017 or later, only if you started it earlier and were using the Blobstore for images.
+				</p>
 				<h4>Why am I changing MyLife?</h4>
 				<p>
 					When I originally created <a href="mylife-a-single-user-ohlife-alternative">MyLife</a> I thought I could just make it and let it run forever. I didn't really want a lot of features, so I just made the initial version, then added <a href="mylife-backup-to-dropbox">Dropbox support</a> and then I thought I was done! Unfortunately Google App Engine is now <a href="https://cloud.google.com/appengine/docs/deprecations/files_api?hl=en">deprecating the files api</a> that I was using for images and import/export, and they want you to use Google Cloud Storage instead. Since I want to continue using MyLife I went and added support for Google Cloud Storage and added a migration option to move your existing images from the old Blobstore to your new Google Cloud Storage bucket! 

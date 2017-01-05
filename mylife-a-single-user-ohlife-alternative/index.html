@@ -104,24 +104,19 @@
  				<strong>This software is provided AS-IS, use it at your own risk. I take no responsibility for any security issues, data loss, email parsing failures or anything else which might happen. You are free to inspect the source code to verify that it meets your needs. You should also check your first few entries to make sure that your emails are being parsed correctly. I have only tested emails from Gmail and the iPhone mail app, I have no idea if other mail clients might mess up some formatting. </strong>
  				</p>
  				<p>
- 					Ok, now that that's out of the way...
+ 					Ok, now that that's out of the way here are the install instructions. These work today, on January 5th, 2017. Google does sometimes change things around so if you're reading this much later you might have to adjust some things, please let me know if this doesn't work for you.
  				</p>
  				<ol>
- 					<li>Download and install the <a href="https://cloud.google.com/appengine/downloads">App Engine SDK for Python</a></li>
- 					<li>Create a new App Engine application, give it some unique id. We'll call it "yourappid" for the rest of these instructions. Choose "Google Authentication" for the authentication option.</li>
- 					<li>Download the source code from <a href="https://github.com/einaregilsson/MyLife">https://github.com/einaregilsson/MyLife</a>. If you want a stable release take one from the <a href="https://github.com/einaregilsson/MyLife/releases">Releases page</a>.
+ 					<li>Download and install the <a href="https://cloud.google.com/sdk/">Google Cloud SDK</a></li>
+ 					<li>Create a new Google Cloud project, give it some unique id. We'll call it "yourappid" for the rest of these instructions.</li>
+ 					<li>Download the latest source code from <a href="https://github.com/einaregilsson/MyLife">https://github.com/einaregilsson/MyLife</a>. If you want a stable release take one from the <a href="https://github.com/einaregilsson/MyLife/releases">Releases page</a>.
  					</li>
- 					<li>Go into the MyLife folder. Type <span class="cmdline">appcfg.py -A yourappid update . </span></li>
+ 					<li>Go into the MyLife folder. Type <span class="cmdline">gcloud app deploy --project yourappid</span></li>
  					<li>Go to https://yourappid.appspot.com. If you're not logged into your Google account you will be prompted to give the application permission to get your email address. </li>
- 					<li id="setup-bucket">Now you need to create a Google Cloud Storage bucket for your images and other files. Goto https://appengine.google.com/settings?&app_id=s~yourappid, and on the bottom of the page is a heading called <strong>Cloud Integration</strong>. Click on the <strong>Create</strong> button there.
- 					<img src="cloudintegration.png" style="margin:10px"/> Wait a couple of minutes and then refresh the page. You should see at the top of the page the name of your bucket, when you see that then it's ready.
- 					<img src="dashboard.png" style="margin:10px"/>
- 					<strong>You must create your bucket like this, not manually. If you do it manually you will have to enable billing and it will not be part of your free quota!</strong>
- 					</li>
- 					
  					<li>Go the the settings page on your app and configure when you want your email, and which email address should be used (by default it will use your Google address)</li>
  					<li>That's it! You'll get the first email immediately after you've logged in, so you can try replying and seeing how it works. After that you'll get an email daily at the time you choose. Unfortunately Gmail (and probably others) now often consider emails from *.appspotmail.com as spam, so check your Spam folder if you don't get the initial email. It's also probably a good idea to add *@yourappid.appspotmail.com to a whitelist so it never goes into Spam. This is what it looks like in my Gmail account:
  					<img src="spamfilter.png" style="margin:10px"/></li>
+ 					<li>Finally, try sending an email with images to make sure they get stored properly. They should do it automatically, but unfortunately Google does change their storage things every so often, so just make sure right away that everything is working like it should.
  				</ol>
 
  				<h4>Importing your OhLife backup</h4>
