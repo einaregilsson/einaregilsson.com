@@ -114,6 +114,7 @@
  					<li>Go into the MyLife folder. Type <span class="cmdline">gcloud app deploy --project yourappid</span></li>
  					<li>Go to https://yourappid.appspot.com. If you're not logged into your Google account you will be prompted to give the application permission to get your email address. </li>
  					<li>Go the the settings page on your app and configure when you want your email, and which email address should be used (by default it will use your Google address)</li>
+ 					<li>Go back into the MyLife folder on your computer. Type <span class="cmdline">gcloud app deploy cron.yaml --project yourappid</span> This is needed to set up the scheduled emails.</li>
  					<li>That's it! You'll get the first email immediately after you've logged in, so you can try replying and seeing how it works. After that you'll get an email daily at the time you choose. Unfortunately Gmail (and probably others) now often consider emails from *.appspotmail.com as spam, so check your Spam folder if you don't get the initial email. It's also probably a good idea to add *@yourappid.appspotmail.com to a whitelist so it never goes into Spam. This is what it looks like in my Gmail account:
  					<img src="spamfilter.png" style="margin:10px"/></li>
  					<li>Finally, try sending an email with images to make sure they get stored properly. They should do it automatically, but unfortunately Google does change their storage things every so often, so just make sure right away that everything is working like it should.
