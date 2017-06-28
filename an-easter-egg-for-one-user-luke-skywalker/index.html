@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>An easter egg for one user: Luke Skywalker</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+		<style>
+			
+			img {
+				box-shadow: grey 0px 0px 2px;
+				padding:0px;
+			}
+
+			li {
+				margin-bottom:12px;
+			}
+			li div {
+				margin:20px;
+				margin-left:-20px;
+			}
+			#screenshots a img {
+				display:inline-block;
+				margin:5px;
+			}
+			#todo {
+				color:green;
+				font-family: 'Courier New', monospace;
+				font-size:12px;
+				font-style: italic;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>An easter egg for one user: Luke Skywalker</h2>
+				<small>
+					Posted: <time>2017-06-28</time> 
+					Last updated: <time datetime="2017-06-28">2017-06-28</time>
+				</small>
+
+				<h3>Episode IV: A New Tweet</h3>
+				<p>
+					A few weeks ago a user on my site, <a href="https://cardgames.io">cardgames.io</a>, sent me a message saying that Mark Hamill had just tweeted a photo of himself playing <a href="https://cardgames.io/yahtzee">Yahtzee</a>. I looked, and sure enough, there it was:
+				</p>
+				<img src="tweet1.png" alt="First tweet from Mark Hamill" />
+				<p>
+					I was happy to see it, posted about it on social media, and it was just a nice weird experience. I didn't think about it much after that, until a couple of days ago when I got an email. The email was from a person who was familiar with Mark and said that she knew that he liked the game and played it all the time. She suggested that I could play a prank on him by changing the opponent's name to Mark. I liked the idea of doing something like that but figured that it would be cooler if I could change the opponent to Darth Vader and just name him "Dad". 
+				</p>
+				<h3>Episode V: The Easter Egg Strikes Back</h3>
+				<p>
+					I spent an hour or so coding up the easter egg. I wanted to target Mark specifically, not just show everyone Darth Vader, since the name "Dad" doesn't really apply to anyone but him! There are no user accounts on the site, but in the original Tweet I had noticed that he had made a custom avatar on the site, a girl with glasses:
+				</p>
+				<img src="avatar.png" alt="Mark's avatar" />
+				<p>
+					Using that information I created a trigger that only activated Darth Vader when someone with that avatar was playing (well, almost, anyone with that hair, glasses and smile, couldn't be sure about skin tone or hair color from the screenshot). 
+				</p>
+				<h3>Episode VI: Return of the Jedi</h3>
+				<p>
+					I didn't have to wait long. The next day Mark posted the following tweet:
+				</p>
+
+				<img src="tweet2.png" alt="Second tweet from Mark Hamill" />
+
+				<p>
+					So, the plan worked, he saw the easter egg and seemed to enjoy it. But I had put one small extra feature in. Would he run into that one? 
+				</p>
+				<img src="tweet3.png" alt="The force is strong with this one" />
+				<p>
+					Yes he did! So that was the story of my easter egg for one user, probably my favorite piece of code I've ever written.
+				</p>
+				<p id="todo">
+					//TODO: Write an epilogue and somehow shoehorn the name "The Force Awakens" in there...
+				</p>
+ 			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>
