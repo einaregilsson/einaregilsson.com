@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Getting people to turn off Ad Block with sad faces</title>
+        <link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+        <style>
+            .tag {
+                font-family:monospace;
+            }
+            li {
+                margin-bottom:10px;
+                font-size:18px;
+            }
+            img {
+                max-width: 90%;
+                display:block;
+                margin:auto;
+                border-radius: 10px;
+                box-shadow: gray 0 0 2px;
+                padding:0px;
+                margin-top:15px;
+            }
+            label {
+                text-align: center;
+                font-weight:bold;
+                font-size: 16px;
+                display: block;
+                margin-bottom:35px;
+                margin-top:7px;
+            }
+        </style>
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Getting people to turn off Ad Block with sad faces</h2>
+				<small>
+					Posted: <time>2018-07-02</time> 
+					Last updated: <time datetime="2018-07-02">2018-07-02</time>
+				</small>
+
+                <p>
+                    I was wondering recently if it would be possible to get users with Ad Blockers on <a href="https://cardgames.io/" title="My website, a popular card game site">CardGames.io</a> to 
+                    turn their blocker off for just our site. Ad blocking isn't a huge problem for us, but still, we would prefer that as many people as possible allowed ads, since ads are ultimately what
+                    keeps us in business. I didn't want to stop people completely from playing, but wanted to see how many of them would respond if we tried to get them to turn their blockers off.
+                </p>
+                <p>
+                    First thing I thought of was just putting up a small notice, politely asking people to support us by turning off their ad blocker, but then I thought of doing something else as well. On the site 
+                    you generally play against three computer players, Bill, John and Lisa. The players are happy while playing but get sad if they lose. People who play a lot on our site have very strong opinions
+                    about the computer players, they see all kinds of differences in them that aren't really there (all the players use the exact same code), get annoyed at some of them and like others. 
+                </p>
+                
+                <img src="opponents.png"/>
+                <label>The computer players</label>
+                <p>
+
+                </p>
+                <p>So, I wrote the code for the ad-block detection and it worked like this:</p>
+                <ol>
+                    <li>A player with ad block who arrives for the first time on the site is tagged as  <span class="tag">"detected"</span>. No notice is shown on first page load, I believe in letting people try the games first to see
+                        if they like them, no one wants to turn off an ad blocker for a site they've just arrived on for the first time.
+                    </li>
+                    <li>
+                        A player tagged as <span class="tag">"detected"</span> loads a page for the second time. We show a polite request asking them to please turn their ad blocker off for our site, including a link to a <a href="https://cardgames.io/adblockoff/">page with
+                        detailed instructions</a> for how to do that. Half of the users get tagged as  <span class="tag">"warnedsad"</span> and half get tagged as <span class="tag">"warnedonly"</span>.</li>
+                        <img src="warning.png" alt"Ad-blocker warning"/>
+                        <label>The ad blocking notice</label>
+                    </li>
+                    <li>
+                        The players who are tagged <span class="tag">"warnedsad"</span> get sad faces on everyone during play, and a small notice below the board saying the players would be happier if the user turned their ad block on. The users tagged as <span class="tag">"warnedonly"</span>
+                        get a normal experience after seeing the request to turn off their ad block once.
+                        <img src="sadplaying.png" alt="Players playing with sad faces"/>
+                        <label>Sad while playing...</label>
+                        <img src="sadwinning.png" alt="Players winning with sad faces" />
+                        <label>Sad while winning...</label>
+                    </li>
+                    <li>
+                        We log when a player tagged <span class="tag">"warnedsad"</span> or <span class="tag">"warnedonly"</span>  turns off their ad blocker, and we log when a player who has turned off their ad blocker turns it on again.
+                    </li>
+                </ol>
+
+
+                <p>I left that code running for a few days. Here are the results:</p>
+                <ul>
+                    <li>~30% of people who saw the notice turned off their ad blocker.</li>
+                    <li>Of the people who turned it off, 90% turned it back on!</li>
+                    <li>No meaningful difference in warning only vs. warning + sad faces!</li>
+                </ul>
+                <p>
+                    So in the end we managed to get slightly less than 3% of our ad blocking users to turn off their blocker permanently. Most surprisingly to me, the sad faces made no difference at all, vs. just the warning. Basically, people who were willing
+                    to try turning their blocker off were willing after seeing the notice, and didn't need the extra push of sad players.
+                </p>
+                <p>
+                    We saw no increase in revenue, but we did definitely see a big increase in emails and Facebook messages! 
+                    Some people were <strong>furious</strong> that we dared to make their experience on the site worse than that of non-adblocking users. We were accused of "blackmail" and "emotional battery". But we also got several emails from older
+                    people who play the games daily and were now confused and sad about the sad faces, and couldn't figure out how to turn off ad blocking, which had been set up for them by relatives. So while I thought showing 
+                    sad faces to ad-blocking users was very funny initially, it quickly became clear that this was a terrible idea, which dramatically increased our support load and didn't increase our revenue at all.
+                </p>
+                <p>
+                    Today I turned the entire feature off. No notice, no sad faces. Lesson learned: trying to force ad-blocking users to allow ads is not worth it at all! Quite a few people emailed and said they'd be happy to support the site in some
+                    other way, like with a PayPal donation or Patreon or something, but just couldn't stand ads. Maybe I'll do something like that in the future. For now we've stopped caring about ad blockers, and will let everyone play with no
+                    limitations. The title of this post should really be "Failing to get people to turn off ad-block with sad faces", but that doesn't sound as good 😀.
+                </p>
+                <p>
+                    In the end the experiment was a complete failure, but hey, at least I've disproven my hypethesis. And I will never stop thinking it's funny that someone with an ad-blocker came to the site, played as well as they could and ended up with this:
+                </p>
+                <img src="sadfinal.png" alt="Sad winner"/>      
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>
