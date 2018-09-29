@@ -49,7 +49,7 @@
 					</li>
 				</ol>
 
-				<p>The icons get ids starting from 40000. The reason for this is that if you specify an application icon in the project properties, it will get the id 32512, which is some kind of  special ID for the main app icon. We want that icon to be the first icon in the file so it will be the default icon in Windows, so we start our id range on 40000. You can of course also decide to not specify the application icon in the project properties, in which case the first icon you pass to InsertIcons.exe will be the default icon for the application.</p>
+				<p>The icons get ids starting from 40000. The reason for this is that if you specify an application icon in the project properties, it will get the id 32512, which is the Win32 constant IDI_APPLICATION = 0x7F00, for the main app icon. We want that icon to be the first icon in the file so it will be the default icon in Windows, so we start our id range on 40000. You can of course also decide to not specify the application icon in the project properties, in which case the first icon you pass to InsertIcons.exe will be the default icon for the application.</p>
 
 				<p>If you need this app you probably want to make it run automatically every time you build your project. The easiest way to do that is to add a post build event in Visual Studio. Go to Project Properties->Build Events and there you can add a Post-Build event. The Post-Build event can use MSBuild variables which is nice. Lets say you have a folder named "icons" under your project folder that has all the icons you want to add. Then you could add the following line to your Post-Build Event:</p>
 
