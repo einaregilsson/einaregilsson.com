@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Serverless: 15% slower and 8x more expensive</title>
+        <link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+        
+        <style>
+            img {
+                box-shadow: gray 0 0 5px;
+                max-width: 90%;
+                border-radius: 4px;
+            }
+
+            label {
+                text-align: center;
+                display: block;
+                font-weight: bold;
+                padding: 6px;
+
+            }
+        </style>
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Serverless: 15% slower and 8x more expensive</h2>
+				<small>
+					Posted: <time>2019-09-18</time> 
+					Last updated: <time datetime="2019-09-18">2019-09-18</time>
+				</small>
+			
+                <p>
+                    Recently I wanted to try changing the API we have at <a href="https://cardgames.io/">CardGames.io</a> and try using the <a href="https://serverless.com/">Serverless</a> framework. Serverless has been a hot topic in the tech world for the last few years and I <del>was procrastinating</del> wanted to keep my tech skills up to date by trying something new, so I decided to spend a few hours learning about serverless and see if hosting our API that way made sense.
+                </p> 
+                <h3>Current setup</h3>
+                <p>
+                    CardGames.io is hosted on AWS. We use S3 to store html pages, css, javascript and images. We have an API written in C# which is hosted on
+                    Elastic Beanstalk, using Linux servers running .NET Core with Docker. Finally we have a CloudFront CDN running in front of both the static files on S3 and the API. Below is our EC2 bill for August 2019. We have a few other instances, but for the API we use the m1.small instances (yes we should probably be using t2.small) and classic load balancing. When you sum up the parts in red it's <strong>164.21$</strong> for the month, not bad. I even included the whole EBS part in that, mostly because I'm not sure which part of it belongs to other stuff we run, we have a couple of other EC2 things running as well. 
+                </p>
+                <div id="aws-bill">
+                    <img src="aws-bill.png" alt="AWS Bill for Elastic Beanstalk"/>
+                    <label>AWS Bill for Elastic Beanstalk</label>
+                </div>
+                <p>
+                    We have two environments with 1-3 instances in each, one is active and the other inactive. We have two because deploying .NET Core in Docker on AWS takes minutes so we deploy to the inactive environment and then switch CNAME records to switch over to the newly deployed one. The slowness in deploying was one of the reasons I wanted to try something new. We have some other servers running node.js apps on Beanstalk and those deploy in seconds, I wanted that for our API as well.
+                </p>
+
+                <h3>Going Serverless</h3>
+                <p>
+                    I went through a <a href="https://dev.to/schwamster/deploy-a-net-core-web-api-with-aws-lambda-and-the-serverless-framework-3762">very nice tutorial</a> on hosting ASP.NET Web APIs using the <a href="https://serverless.com">Serverless</a> framework, and found that I only had to add a simple config file, add one dependency and one small startup class to my existing API project. I then deployed it, which took maybe 20 seconds or so, a lot better than deploying to Beanstalk. I guess it's because Lambda has built in support for .NET Core (only 2.2 though), whereas in Beanstalk it's only supported if you use Docker and manage it yourself. In any case, so far I was happy, no thinking about autoscaling groups, max instances or any of that stuff. 
+                </p>
+                
+                <h3>Testing performance</h3>
+                <p>
+                    Serverless on AWS is Lambda, which is what actually hosts your functions, and API Gateway, which is a front that lets you add stuff like rate-limiting, API keys and a lot more. I set our Lambda functions up in the us-west-2 region, the same one where our Beanstalk servers are hosted. I then set our CloudFront instance up to route requests for one of our games to our new serverless setup, and for another game to our old Beanstalk setup. Then I ran a simple test on two urls, one serverless, one Beanstalk. Both urls were hitting the exact same code in our API, saving one event to the database. I ran 100 requests for each, the results were:
+                </p>
+                <div id="perf">
+                    <img src="perf.png" alt="Performance comparison, serverless is 15% slower" />
+                    <label>Performance comparison</label>
+                </div>
+                <p>
+                    I consistently found that the serverless setup was <strong>15% slower</strong>. (Also, if you think it's slow altogether, I am running this from Iceland, so there's some latency involved). This was disappointing, but it was still fast enough and I just figured that there was some overhead in running API Gateway in front of our API, it does provide a lot of things, even if we don't use them. So, disappointing but not a dealbreaker!
+                </p>
+
+                <h3>Pricing</h3>
+                <p>
+                    To be honest I hadn't thought at all about the pricing beforehand. I just figured "Pay for what you use" sounded like it would be cheaper than
+                    paying for instances that are on 24/7. So I let the new serverless setup run for a couple of days and then started checking my bills. Whoops! The Lambda+API Gateway bill was already over a hundred dollars! I first started messing with the Lambda setup, giving the lambda functions less memory to decrease the bill, but when I really looked at what was happening it was obvious that it was API Gateway that was the main problem. This is the 
+                    pricing for API Gateway:
+                </p>
+                <img src="api-gateway-pricing.png" alt="API Gateway pricing" />
+                <label>API Gateway pricing</label>
+
+                <p>
+                    Our API accepts around 10 million requests a day. That's ~35$ <strong>every day</strong>, just for API Gateway. On top of that Lambda was costing around ~10$ a day, although that could maybe be reduced by using less memory. Together that's around 45$ per day, or <strong>1350$ per month</strong>, vs. <strong>~164$ per month</strong> for Elastic Beanstalk. That's <strong>8 times more expensive!</strong> I like new tech, and deploying quickly but I'm not gonna pay an extra ~1200$ month for it. Back to Beanstalk!
+                </p>
+
+                <h3>Conclusion</h3>
+                <p>
+                    Well, first of all I should probably read AWS pricing pages and do some math before changing things! But of course then I <del>would have had to do my real work</del> wouldn't have learnt valuable tech skills! I'm sure there are cases where API Gateway and Lambda are better than Elastic Beanstalk. I guess our use case is just not one of them. Maybe if you're using API Keys, rate limiting and other stuff API Gateway provides then it makes sense to pay 3.50$ for a million requests. For us it would have been better if we could just put a normal load balancer in front of Lambda. As far as I know that's not possible, API Gateway is necessary for http access to Lambda. 
+                </p>
+                <p>
+                    But even if we were just paying for Lambda, at 10$ a day we would be paying 300$ a month instead of 164$. We have a lot of requests, but each request does very little, it's basically one database call per request. Maybe heavier requests that use more compute time would be better served with Lambda, where you pay per 100ms of compute time. Below is  a report for one request, you can see we're using 3.50ms of compute time and being billed for 100ms, which seems like a big waste.
+                </p>
+                <img src="lambda-report.png" alt="Report for one Lambda request, used 3.50ms, billed 100ms" />
+                <label>Lambda report for one request</label>
+                
+                <p>
+                    Finally, I'm not trying to bash API Gateway, Lambda or serverless in general here, just showing that for some workloads they are a lot more expensive than boring old EC2 and Elastic Beanstalk. So that's what we're sticking with 🙂. It's also very possible that there's a much better or more efficient way to set this up, I'm by no means an AWS expert, so if you see some glaring errors by all means point them out in the comments. And now, if want to spend a few minutes playing simple card games, try out <a href="https://cardgames.io">CardGames.io</a> or our new puzzle game, <a href="https://spacebugs.io">SpaceBugs.io</a>.
+                </p>
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>
