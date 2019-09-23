@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>A GitHub Action for generating sequential build numbers</title>
+        <link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+        
+        <style>
+            img {
+                box-shadow: gray 0 0 5px;
+                max-width: 90%;
+                border-radius: 4px;
+            }
+
+            label {
+                text-align: center;
+                display: block;
+                font-weight: bold;
+                padding: 6px;
+
+            }
+        </style>
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>A GitHub Action for generating sequential build numbers</h2>
+				<small>
+					Posted: <time>2019-09-23</time> 
+                    Last updated: <time datetime="2019-09-23">2019-09-23</time>
+				</small>
+			
+                <p>
+                    At <a href="https://cardgames.io">CardGames.io</a> we've been using <a href="https://www.jetbrains.com/teamcity/">TeamCity</a> as our CI/CD server for the last few years.
+                    It's been working OK, we have a pretty standard setup, every branch gets built and tested, master branch gets deployed to production. When I first
+                    heard that GitHub was coming out with a CI/CD offering, called <a href="https://github.com/features/actions">GitHub Actions</a> I was interested to see what it was like. We store all our
+                    code on GitHub and I figured it might be nice to have everything integrated there. So I applied for the beta program, and a few days ago we got in.
+                </p>
+                <p>
+                    I tried it out and immediately liked it. I like having simple YAML files for defining the workflow, as opposed to all the manual clicking around to get
+                    stuff set up in TeamCity. I like not having to think about the authentication against GitHub to check out the source. I saw pretty much only one downside: there was no build number for each workflow run that I could use to version our artifacts. I've always had simple build numbers on CardGames.io, they're printed on the page, people can tell me if they're having problems that the version was 2130 for example. I could have used the id of the git commit being
+                    built as some kind of version but I didn't really want that, I wanted normal numbers to continue our existing sequence. I also like to tinker with things, so I figured I should try to build this myself somehow 🙂.
+                </p>
+                <p>
+                    My requirements for the project were:
+                </p>
+                
+                <ol>
+                    <li>It should be a self-contained, re-usable action that I could use for all our projects.</li>
+                    <li>The build number should not be saved in the repository as a commit, I didn't want endless commits for version bumps.</li>
+                    <li>The build number should be stored as some kind of meta-data on GitHub, I didn't want to involve any 3rd party thing to generate the numbers or store them.</li>
+                    <li>You should be able to start the numbering at any number you want.</li>
+                    <li>The action should run fast, I like to run builds as fast as possible and didn't want to waste a long time on build number generation.</li>
+                </ol>
+
+                <p>
+                    There are two kinds of GitHub actions, JavaScript ones and Docker ones. The Docker ones run a bit slower, since they have to build the Docker image so I decided to do a pure javascript action. The simplest possible GitHub action is just a GitHub repository with a action.yml file for metadata about the action, and a single javascript file to run. My first version of action.yml was:
+                </p>
+                <code data-language="js">
+name: 'Build Number Generator'
+description: 'Generate sequential build numbers for workflow runs'
+author: 'Einar Egilsson'
+runs:
+  using: 'node12'
+  main: 'main.js'
+                </code>
+
+                <p>
+                    Then I needed to figure out where to actually store the build number! I looked at the GitHub API, trying to figure out where I could attach one little number. I thought about creating commits on other branches, creating blobs in the git repository itself, but in the end I decided on a very simple, very hacky solution. I used the <a href="https://developer.github.com/v3/git/refs/">Refs API</a> to create a tag with the name <strong>build-number-n</strong> where n was the current build number. When the action runs it will create a <strong>build-number-(n+1)</strong> tag pointing to the current commit being built and delete the old <strong>build-number-n</strong> tag. I chose this method because it would result in few API calls, and it's easy to start the numbering wherever you want, just manually create a tag <strong>called build-number-x</strong>, where x is where you want to start. The nice thing about
+                    the refs api is that they have a search api that accepts prefixes, i.e. you can search for all tags that start with <strong>build-number-</strong> , so it's easy to get the current build number tag, you don't have to get all tags in the repository.
+                </p>
+                <p>GitHub actions give you a token for accessing the GitHub API, so I declared that as an input to my action, and added the build number as an output. My full action.yml then became:
+
+                </p>
+                <code data-language="js">
+                        name: 'Build Number Generator'
+                        description: 'Generate sequential build numbers for workflow runs'
+                        author: 'Einar Egilsson'
+                        runs:
+                          using: 'node12'
+                          main: 'main.js'
+                        inputs:
+                          token:
+                            description: 'GitHub Token to create and delete refs (GITHUB_TOKEN)'
+                            required: true 
+                            
+                        outputs:
+                          build_number:
+                            description: 'Generated build number'
+                </code>
+                <p>
+                    The actual action, the js file, starts by trying to find any build-number tags in the repository, and creating a new build
+                    number, one higher than the highest one:
+                </p>
+                <code data-language="js">
+                    let path = '/repos/'+env.GITHUB_REPOSITORY+'/git/refs/tags/build-number-';
+                    request('GET', path, null, (err, status, result) => {
+
+                        let nextBuildNumber, nrTags;
+                    
+                        if (status === 404) {
+                            console.log('No build-number ref available, starting at 1.');
+                            nextBuildNumber = 1;
+                            nrTags = [];
+                        } else if (status === 200) {
+                            nrTags = result.filter(d => d.ref.match(/\/build-number-(\d+)$/));
+                            
+                            //Existing build numbers:
+                            let nrs = nrTags.map(t => parseInt(t.ref.match(/-(\d+)$/)[1]));
+                    
+                            let currentBuildNumber = Math.max(...nrs);
+                            console.log('Last build nr was ' + currentBuildNumber);
+                    
+                            nextBuildNumber = currentBuildNumber + 1;
+                            console.log('Updating build counter to ' + nextBuildNumber + '...');
+                        } else {
+                            //... [error handling not shown] 
+                        }
+                    </code>
+
+                    <p>We then create a new tag with the new build number, and log special messages that GitHub Actions understands
+                        to set the output of the action, and an environment variable named BUILD_NUMBER:
+                    </p>
+                
+                    <code data-language="js">
+                        let newRefData = {
+                            ref: 'refs/tags/build-number-' + nextBuildNumber, 
+                            sha: env.GITHUB_SHA
+                        };
+                        
+                        let newPath = `/repos/${env.GITHUB_REPOSITORY}/git/refs`;
+                        request('POST', newPath, newRefData, (err, status, result) => {
+                            if (status !== 201 || err) {
+                                fail('Failed to create new build-number ref. Status: ' + status + ' , err: ' + err);
+                            }
+                
+                            console.log('Successfully updated build number to ' + nextBuildNumber);
+                            
+                            //Setting the output and a environment variable to new build number...
+                            console.log('::set-env name=BUILD_NUMBER::' + nextBuildNumber);
+                            console.log('::set-output name=build_number::' + nextBuildNumber); 
+
+                    </code>
+                    <p>Finally we delete the older build-number tags:</p>
+                    <code data-language="js">
+                        for (let nrTag of nrTags) {
+                            let delPath = '/repos/'+env.GITHUB_REPOSITORY+'/git/'+nrTag.ref;
+                            request('DELETE', delPath, null, (err, status, result) => {
+                                if (status !== 204 || err) {
+                                    console.warn('Failed to delete ref ' + nrTag.ref + ', status: ' + status + ', err: ' + err);
+                                } else {
+                                    console.log('Deleted ' + nrTag.ref);
+                                }
+                            });
+                        }
+                    </code>
+
+                    <p>
+                        The code here is slightly simplified compared to the actual code, which you can see in full at <a href="https://github.com/einaregilsson/build-number">https://github.com/einaregilsson/build-number</a>, but gives you an idea of how the action works. 
+                    </p>
+
+                    <p>
+                        Finally, how do we use this in our workflows? Like this:
+                    </p>
+
+                    <code data-language="js">
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Generate build number
+      uses: einaregilsson/build-number@v1 
+      with: 
+        token: ${{secrets.github_token}}        
+    
+    - name: Print generated build number
+      run: echo Build number is $BUILD_NUMBER
+                    </code>
+
+                    <p>
+                            You can use the <strong>$BUILD_NUMBER</strong> environment variable in any steps in the current job after the build number generator runs. 
+                            If you need the build number in multiple jobs it gets a little more complicated, but I'm not gonna go into that in this blog post, it's already long enough. If you look at the <a href="https://github.com/einaregilsson/build-number/blob/master/README.md">README.md</a> in the <a href="https://github.com/einaregilsson/build-number">GitHub repository</a> it will show you how to handle that. 
+                    </p>
+                    <p>
+                        I've been using this in a couple of projects now and it's been working great. It was also fun learning something new 🙂. If you find this useful and use it for your own builds, please let me know in the comments!
+                    </p>
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a> or check out <a href="../archive/">my other blog posts</a>.</p>
+			<div id="disqus_thread"></div>
+			<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>
