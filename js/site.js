@@ -42,13 +42,13 @@ function syntaxHighlightCodeBlocks() {
 
 function setupAnalytics() {
 	_gaq = [['_setAccount', 'UA-5098292-1'],['_trackPageview']];
-	$.getScript('http://www.google-analytics.com/ga.js');
+	$.getScript('//www.google-analytics.com/ga.js');
 }
 
 function setupDisqus() {
 	disqus_shortname = 'einaregilsson'; 
 	disqus_identifier = document.location.pathname.replace(/\//g, '');
 	if (disqus_identifier) {
-		$.getScript('http://' + disqus_shortname + '.disqus.com/embed.js');
+		$.getScript('//' + disqus_shortname + '.disqus.com/embed.js');
 	}
 }
