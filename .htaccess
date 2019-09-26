@@ -5,9 +5,11 @@ RewriteBase /
 RewriteCond %{HTTPS} !=on
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301,NE] 
 
-RewriteRule ^(binaryclock|birketinget|brudkaup|idiot|idnskoli|karenbumba|oldweb|plr|qualitytabs)$ $1/ [R,L]
+RewriteRule ^(binaryclock|birketinget|brudkaup|idiot|idnskoli|myndir|oldweb|plr|qualitytabs)$ $1/ [R,L]
 
 RewriteRule ^cybercity/?$ cybercity/hverfi/hverfi.html [R,L]
+
+RewriteRule ^(binaryclock|birketinget|brudkaup|cybercity|idiot|idnskoli|myndir|oldweb|plr|qualitytabs)(/.*)$ minisites/$1$2 [L]
 
 RewriteRule ^20\d\d/\d\d/\d\d/(.*)$ $1 [R=301,L]
 RewriteRule ^projects/(.*)$ $1 [R=301,L]
