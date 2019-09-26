@@ -33,7 +33,7 @@
 					Posted: <time>2019-09-18</time> 
 					Last updated: <time datetime="2019-09-18">2019-09-18</time>
 				</small>
-			
+            
                 <p>
                     Recently I wanted to try changing the API we have at <a href="https://cardgames.io/">CardGames.io</a> and try using the <a href="https://serverless.com/">Serverless</a> framework. Serverless has been a hot topic in the tech world for the last few years and I <del>was procrastinating</del> wanted to keep my tech skills up to date by trying something new, so I decided to spend a few hours learning about serverless and see if hosting our API that way made sense.
                 </p> 
@@ -93,6 +93,13 @@
                 <p>
                     Finally, I'm not trying to bash API Gateway, Lambda or serverless in general here, just showing that for some workloads they are a lot more expensive than boring old EC2 and Elastic Beanstalk. So that's what we're sticking with 🙂. It's also very possible that there's a much better or more efficient way to set this up, I'm by no means an AWS expert, so if you see some glaring errors by all means point them out in the comments. And now, if want to spend a few minutes playing simple card games, try out <a href="https://cardgames.io">CardGames.io</a> or our new puzzle game, <a href="https://spacebugs.io">SpaceBugs.io</a>.
                 </p>
+                <p class="update"><strong>UPDATE 26.9.2019:</strong> 
+                    This post got over a 100.000 views in 3 days and was on the top of both <a href="https://news.ycombinator.com/item?id=21046547">Hacker News</a> and <a href="https://www.reddit.com/r/programming/comments/d85z8l/serverless_15_slower_and_8x_more_expensive/">reddit.com/r/programming</a> .                
+                    I've definitely learnt a few things. I should have used an Application Load Balancer instead of API Gateway in front of Lambda. I should upgrade my ancient m1.small instances to a newer instance type.
+                    And I was able to get my Beanstalk deploy time down to a reasonable 30~40 seconds by using the runtime .NET Core docker image instead of the SDK one. Serverless still isn't the right fit for my use case,
+                    but it was definitely an interesting experiment! 
+                </p>
+    
 			</article>
 			<hr>
 			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a> or check out <a href="../archive/">my other blog posts</a>.</p>
