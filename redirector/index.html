@@ -5,6 +5,28 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Redirector</title>
 		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+		<style>
+			#links a {
+				display: inline-block;
+				padding-left: 24px;
+				background-position: left;
+				background-repeat: no-repeat;
+				background-size: 20px;
+				margin-right: 30px;
+			}
+			#firefox {
+				background-image:url(firefox.png);
+			}
+			#opera {
+				background-image:url(opera.png);
+			}
+			#chrome {
+				background-image:url(chrome.png);
+			}
+			#edge {
+				background-image:url(edge.png);
+			}
+		</style>
 	</head>
 	<body>
 		<header>
@@ -23,11 +45,12 @@
 
 				<p>From its initial version in 2007 and up until 2015 it was a Firefox-only add-on. In 2015 I rewrote it from scratch and now the same source is used to build the add-on for four browsers. I wrote <a href="/writing-a-browser-extension-for-three-browsers/">a blog post describing that rewrite</a> and what was required to make it work on all the browsers. Below are links to the add-on page for each browser where you can install the add-on: </p>
 
-				<p>
-					<a href="https://addons.mozilla.org/en-US/firefox/addon/5064">Firefox Redirector</a> | 
-					<a href="https://chrome.google.com/webstore/detail/redirector/ocgpenflpmgnfapjedencafcfakcekcd">Chrome Redirector</a> | 
-					<a href="https://microsoftedge.microsoft.com/addons/detail/redirector/jdhdjbcalnfbmfdpfggcogaegfcjdcfp">Edge Redirector</a> |
-					<a href="https://addons.opera.com/en/extensions/details/redirector-2/">Opera Redirector</a> 
+				<h3>Download Redirector for:</h3>
+				<p id="links">
+					<a id="firefox" href="https://addons.mozilla.org/en-US/firefox/addon/5064">Firefox</a>
+					<a id="chrome" href="https://chrome.google.com/webstore/detail/redirector/ocgpenflpmgnfapjedencafcfakcekcd">Chrome</a>
+					<a id="edge" href="https://microsoftedge.microsoft.com/addons/detail/redirector/jdhdjbcalnfbmfdpfggcogaegfcjdcfp">Edge</a>
+					<a id="opera" href="https://addons.opera.com/en/extensions/details/redirector-2/">Opera</a>
 				</p>
 
 				<h3>Privacy Policy</h3>
