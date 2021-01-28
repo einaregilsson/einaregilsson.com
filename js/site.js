@@ -1,7 +1,7 @@
 $(function() {
 	syntaxHighlightCodeBlocks();
 	setupAnalytics();
-	setupDisqus();
+	//setupDisqus();
 });
 
 function syntaxHighlightCodeBlocks() {
