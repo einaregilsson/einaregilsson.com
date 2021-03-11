@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Make Your Photo 16x9</title>
+		<link rel="stylesheet" href="../css/site.css" type="text/css" media="screen" />
+		<style>
+			img {
+				padding: 10px;
+				box-shadow: gray 0 0 4px;
+				background: white;
+				margin:10px auto;
+				max-width: 80%;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<h1><a href="../">Einar Egilsson</a></h1>
+		</header>
+		<div id="content">			
+			<article>
+				<h2>Make your Photo 16x9</h2>
+				<small>
+					Posted: <time>2021-03-11</time> 
+					Last updated: <time datetime="2021-03-11">2021-03-11</time>
+				</small>
+			<p>
+				I sometimes like to make little utilies to make boring tasks easier. Often I don't really save much time on it
+				since programming the utility takes as much time as performing the task dozens of times, but I enjoy programming 🙂.
+			</p>
+			<p>
+				One thing that has been annoying me for a while is the cropping of images on Twitter. I run the <a href="https://twitter.com/cardgames_io">Twitter account for CardGames.io</a>
+				and I often post images of emails or messages from users that I think are funny. These are often very short and wide images, a couple of lines of text,
+				and when I post them on Twitter they usually get cropped really badly, so you have to actually click on the image to be able to see what it says,
+				you can't just read it in your timeline. <small>(Twitter is experimenting with different cropping now, so maybe this is obsolete by the time you see this, but at least today,
+				in my newly updated Twitter app it still shows like this)</small>.
+			</p>
+			<img style="width:500px" src="original.jpg"/>
+			<p>
+				It seems like a small thing, but even having to click an image to view it can make a lot fewer people actually look at your tweet. 
+				I had started to open these images in my graphics program, pad them to the right aspect ratio for Twitter, 16x9, and then posting them.
+				This took a little time every time I did it, so I decided to make it "easier" for myself, and made a little single-serving site to do this:
+			</p>
+			<p style="text-align:center; font-size:20px">
+				<a href="https://photo16x9.com">https://photo16x9.com</a>
+			</p>
+			<img src="site.png"/>
+			<p>
+				
+				It lets you drag and drop an image onto the page, and automatically pads the image to make it fit the 16x9 aspect ratio. The only 
+				question was, what should I fill the image out with? I ended up making a couple of possibilities. 
+			</p>
+			<p>
+				The simplest ones are you can just fill it with solid black:
+			</p>
+			<img src="black.png" />
+
+			<p>...or solid white: </p>
+			<img src="white.png" />
+
+
+			<p>
+				You can fill it with transparency, although Twitter will put in some filler color if you do that:
+			</p>
+			<img src="transparent.png" />
+
+			<p>
+				You can use the "Detected color" option. That will look at all the pixels at the top and bottom of the image, choose
+				the color that occurs most often, and fill the image with that color:
+			</p>
+			<img src="detected.png" />
+
+			<p>
+				And finally, you can pad it with a blurred version of the image itself, similar to what is often done for vertical video when
+				it's being shown on TV. Unfortunately Safari doesn't support the <code>.filter</code> property on the Canvas, so I had to add a little
+				polyfill for that, I used <a href="https://github.com/forceuser/canvas-box-blur/">Canvas Box Blur</a> for that.
+			</p>
+			<img src="blur.png" />
+
+			<p>
+				It also works for tall and narrow images:
+			</p>
+			<img src="tall.png"/>
+			<p>
+				The whole thing is contained in one single index.html file, you can see it at <a href="https://github.com/einaregilsson/photo16x9">https://github.com/einaregilsson/photo16x9</a>.
+				There's no special purpose behind having it all in one file, I just like self-contained things 🙂. And I decided not to use any analytics, cookies or anything like that,
+				because really what am I gonna use that information for? 
+			</p>
+			<img src="cookies.png"/>
+
+			<p>
+				Apparently Twitter is making some changes to it's cropping algorithm now, so maybe this will be obsolete tomorrow, but if you use the site and find it 
+				useful, let me know on Twitter, I'm <a href="https://twitter.com/einaregilsson">@einaregilsson</a>
+			</p>
+			
+			<p>Oh, and finally, here's the tweet that was at the start of the post with a padded image instead:</p>
+			<img src="padded.jpg"/>
+			</article>
+			<hr>
+			<p class="shamelessplug">If you read this far you should probably <a href="http://twitter.com/einaregilsson">follow me on Twitter</a> or check out <a href="../archive/">my other blog posts</a>. I no longer have comments on this blog, but you can <a href="mailto:einar@einaregilsson.com">send me an email</a> if you have some comments about this page.</p>
+		</div>
+		<footer></footer>
+		<script src="../js/jquery-1.7.min.js"></script>
+		<script src="../js/site.js"></script>
+	</body>
+</html>
